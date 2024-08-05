@@ -21,3 +21,56 @@ This project aims to address these issues by developing a data-driven approach t
 5. **Validation**: Test the recommendations against historical data and expert opinions to validate the accuracy and effectiveness of the data-driven approach.
 
 By achieving these objectives, the project seeks to revolutionize the national team selection process, making it more scientific, transparent, and fair, ultimately contributing to the improvement of Singapore's national football team's performance on the international stage.
+
+### Data Collection
+
+**Sources**:
+- **SofaScore**: Comprehensive match statistics, including goals, assists, passes, and other performance metrics.
+- **Other Free Data Sources**: Additional football data from platforms such as Soccerway and local league websites to fill in any gaps.
+
+**Process**:
+1. **Web Scraping**: Using web scraping techniques to extract data from SofaScore and other identified sources.
+   - **Tools**: Python libraries like `requests`, `BeautifulSoup`, and potentially `Selenium` for more complex interactions.
+2. **Data Integration**: Consolidating data from multiple sources into a unified database.
+   - **Tools**: `pandas` for data manipulation and integration.
+3. **Data Cleaning**: Ensuring the data is clean, accurate, and formatted consistently.
+   - Handling missing values, duplicates, and data type inconsistencies.
+4. **Feature Engineering**: Creating new features from the raw data to better capture player performance and suitability for specific roles.
+   - Examples include per-90 statistics, form metrics, and advanced performance indicators.
+
+### Model
+
+**Objective**:
+- To predict the best players for specific roles and formations in the Singapore national football team based on their club-level performance data.
+
+**Approach**:
+1. **Role and Formation Classification**:
+   - Define specific roles within different formations (e.g., central midfielder in a 4-3-3 formation).
+   - Label players according to these roles based on historical data and expert input.
+
+2. **Feature Selection**:
+   - Identify key performance metrics relevant to each role (e.g., passing accuracy for midfielders, goal conversion rate for strikers).
+   - Use domain knowledge and statistical techniques to select the most relevant features.
+
+3. **Modeling Techniques**:
+   - **Machine Learning Models**: Use classification algorithms to predict the suitability of players for specific roles.
+     - Algorithms: Random Forest, Gradient Boosting, and Support Vector Machines (SVM).
+   - **Performance Metrics**: Use metrics like accuracy, precision, recall, and F1-score to evaluate model performance.
+   - **Cross-Validation**: Implement cross-validation techniques to ensure robustness and avoid overfitting.
+
+4. **Ensemble Methods**:
+   - Combine multiple models to improve prediction accuracy and reliability.
+   - Use techniques like stacking or voting classifiers to aggregate model outputs.
+
+5. **Model Interpretation and Validation**:
+   - Use SHAP (SHapley Additive exPlanations) values to interpret model predictions and understand feature importance.
+   - Validate model predictions with historical data and expert opinions.
+
+6. **Visualization and Reporting**:
+   - Create interactive dashboards to visualize player performance and model recommendations.
+   - Tools: `matplotlib`, `seaborn`, and `plotly` for visualizations.
+
+**Implementation**:
+- Integrate the model into a decision-support tool for national team selectors, providing data-driven recommendations for player selection based on club-level performance analytics.
+
+By following this approach, the project aims to create a robust, data-driven model that enhances the player selection process for the Singapore national football team, ensuring that the best players are chosen for their specific roles and formations based on objective performance metrics.
