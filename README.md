@@ -76,7 +76,6 @@ By achieving these objectives, the project seeks to revolutionize the national t
 By following this approach, the project aims to create a robust, data-driven model that enhances the player selection process for the Singapore national football team, ensuring that the best players are chosen for their specific roles and formations based on objective performance metrics.
 
 
-To go more in-depth and evaluate players for specific roles within positions, you can take inspiration from systems used in games like Football Manager, which assigns specific roles to positions (e.g., ball-winning midfielder, deep-lying playmaker). Here's how you can enhance your project to include specific roles within positions:
 
 ### 1. Define Specific Roles
 For each position, define the specific roles and the unique attributes required for each. For example:
