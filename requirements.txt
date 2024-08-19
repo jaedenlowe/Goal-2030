@@ -1,3 +1,4 @@
 streamlit
 pandas
 pycaret
+python==3.11.7
