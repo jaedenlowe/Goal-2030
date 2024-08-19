@@ -3,7 +3,7 @@ import pandas as pd
 from pycaret.classification import load_model, predict_model  # Change to pycaret.regression if it's a regression model
 
 # Load the trained PyCaret model
-model = load_model('bestmodel.pkl.pkl')  # Replace 'your_model_file' with your actual model file name
+model = load_model('bestmodel.pkl')  # Replace 'your_model_file' with your actual model file name
 
 # Function to make predictions
 def predict(input_df):
