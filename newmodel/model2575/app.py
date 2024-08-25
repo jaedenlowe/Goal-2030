@@ -3,7 +3,7 @@ import pandas as pd
 from pycaret.classification import load_model, predict_model
 
 # Load the PyCaret model (make sure to replace 'model_name' with your actual model name)
-model = load_model('model_results2575_withkeepers.pkl')
+model = load_model('model_results2575_withkeepers')
 
 # Streamlit app
 st.title("Player Attribute Prediction")
