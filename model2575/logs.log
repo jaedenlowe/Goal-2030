@@ -1,0 +1,3 @@
+2024-08-25 21:44:29,879:WARNING:C:\Users\jaede\AppData\Roaming\Python\Python312\site-packages\pycaret\utils\generic.py:830: SyntaxWarning: invalid escape sequence '\P'
+  """
+
