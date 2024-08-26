@@ -2,18 +2,20 @@ import streamlit as st
 import pandas as pd
 from pycaret.classification import load_model, predict_model
 
-# Load the PyCaret model (make sure to replace 'model_name' with your actual model name)
-model1 = load_model('model_y1_tradkeeper')
-model2 = load_model('model_y2_sweeperkeeper')
-model3 = load_model('model_y3_ballplayingdefender')
-model4 = load_model('model_y4_nononsensedefender')
-model5 = load_model('model_y5_fullback')
-model6 = load_model('model_y6_allactionmidfielder')
-model7 = load_model('model_y7_midfieldplaymaker')
-model8 = load_model('model_y8_traditionalwinger')
-model9 = load_model('model_y9_invertedwinger')
-model10 = load_model('model_y10_goalpoacher')
-model11 = load_model('model_y11_targetman')
+# Load the PyCaret models
+models = [
+    load_model('model_y1_tradkeeper'),
+    load_model('model_y2_sweeperkeeper'),
+    load_model('model_y3_ballplayingdefender'),
+    load_model('model_y4_nononsensedefender'),
+    load_model('model_y5_fullback'),
+    load_model('model_y6_allactionmidfielder'),
+    load_model('model_y7_midfieldplaymaker'),
+    load_model('model_y8_traditionalwinger'),
+    load_model('model_y9_invertedwinger'),
+    load_model('model_y10_goalpoacher'),
+    load_model('model_y11_targetman')
+]
 
 # Streamlit app
 st.title("Player Attribute Prediction")
@@ -24,18 +26,16 @@ uploaded_file = st.file_uploader("Upload a CSV file with player attributes", typ
 if uploaded_file is not None:
     # Read the CSV file into a DataFrame
     df = pd.read_csv(uploaded_file)
-    
+
     # Display the dataframe
     st.write("Uploaded DataFrame:")
     st.write(df.head())
-    
-    # Make predictions
-    predictions = predict_model(model, data=df)
-    
+
+    # Make predictions for each model
+    predictions = [predict_model(model, data=df) for model in models]
+
     # Display predictions
     st.write("Predictions:")
-    st.write(predictions)
-    
-    # Optionally, you can display just the prediction column
-    st.write("Predicted Labels:")
-    st.write(predictions['Label'])
+    for i, prediction in enumerate(predictions):
+        st.write(f"Model {i+1}:")
+        st.write(prediction)
