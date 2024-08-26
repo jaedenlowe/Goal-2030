@@ -15,20 +15,6 @@ model9 = load_model('model_y9_invertedwinger')
 model10 = load_model('model_y10_goalpoacher')
 model11 = load_model('model_y11_targetman')
 
-model_map = {
-    'target1': model1,
-    'target2': model2,
-    'target3': model3,
-    'target4': model4,
-    'target5': model5,
-    'target6': model6,
-    'target7': model7,
-    'target8': model8,
-    'target9': model9,
-    'target10': model10,
-    'target11': model11,
-}
-
 # Streamlit app
 st.title("Player Attribute Prediction")
 
