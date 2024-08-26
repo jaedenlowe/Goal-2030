@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 from pycaret.classification import load_model, predict_model
 
+model_path = 'P:\DAB Slides\Capstone\Goal-2030\newmodel\model2575\model_y1_tradkeeper.pkl'
+print(f"Loading model from: {model_path}")
+model1 = load_model(model_path)
+
 # Load the PyCaret model (make sure to replace 'model_name' with your actual model name)
 model1 = load_model('model_y1_tradkeeper')
 model2 = load_model('model_y2_sweeperkeeper')
