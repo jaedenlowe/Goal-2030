@@ -53,8 +53,8 @@ if uploaded_file is not None:
     st.write("Predictions:")
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         # Rename the 'Label' column to 'Recommended' and convert to binary
-        prediction['Recommended'] = prediction['Label'].apply(lambda x: 1 if x == '1' else 0)
-        prediction.drop('Label', axis=1, inplace=True)
+        prediction['Recommended'] = prediction['prediction_label'].apply(lambda x: 1 if x == '1' else 0)
+        prediction.drop('prediction_label', axis=1, inplace=True)
 
         # Display model name and prediction results
         st.header(f"{model_name}")
