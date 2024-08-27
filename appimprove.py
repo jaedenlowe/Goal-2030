@@ -34,17 +34,17 @@ model_names = [
 
 # Dictionary mapping model names to their score column names
 score_column_map = {
-    Traditional Keeper: "y1_tradkeeper",
-    Sweeper Keeper: "y2_sweeperkeeper",
-    Ball-Playing Defender: "y3_ballplayingdefender",
-    No-Nonsense Defender: "y4_nononsensedefender",
-    Full-Back: "y5_fullback",
-    All-Action Midfielder: "y6_allactionmidfielder",
-    Midfield Playmaker: "y7_midfieldplaymaker",
-    Traditional Winger: "y8_traditionalwinger",
-    Inverted Winger: "y9_invertedwinger",
-    Goal Poacher: "y10_goalpoacher",
-    Target Man: "y11_targetman"
+    "Traditional Keeper": "y1_tradkeeper",
+    "Sweeper Keeper": "y2_sweeperkeeper",
+    "Ball-Playing Defender": "y3_ballplayingdefender",
+    "No-Nonsense Defender": "y4_nononsensedefender",
+    "Full-Back": "y5_fullback",
+    "All-Action Midfielder": "y6_allactionmidfielder",
+    "Midfield Playmaker": "y7_midfieldplaymaker",
+    "Traditional Winger": "y8_traditionalwinger",
+    "Inverted Winger": "y9_invertedwinger",
+    "Goal Poacher": "y10_goalpoacher",
+    "Target Man": "y11_targetman"
 }
 
 # Streamlit app
