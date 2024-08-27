@@ -74,8 +74,8 @@ if uploaded_file is not None:
     threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
 
     # Create checkboxes for filtering by prediction_label
-    show_positive = st.checkbox("Show Positive Predictions")
-    show_negative = st.checkbox("Show Negative Predictions")
+    show_recommended = st.checkbox("Show Recommended")
+    show_not_recommended = st.checkbox("Show Not Recommended")
 
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
@@ -86,11 +86,17 @@ if uploaded_file is not None:
             filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
 
             # Filter predictions based on prediction_label
-            if show_positive and not show_negative:
+            if show_recommended and not show_not_recommended:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
-            elif show_negative and not show_positive:
+            elif show_not_recommended and not show_recommended:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'prediction_score']])
+            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'Probability']])
+
+            # Display the recommendation based on prediction_label
+            if filtered_prediction['prediction_label'].iloc[0] == 1:
+                st.write("Recommended")
+            else:
+                st.write("Not Recommended")
