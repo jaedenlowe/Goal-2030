@@ -79,22 +79,18 @@ if uploaded_file is not None:
 
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
-            # Rename the 'Label' column to 'Recommended' and convert to binary
-            prediction['Recommended'] = prediction['prediction_label'].apply(lambda x: "Recommended" if x == '1' else "Not Recommended")
-            prediction.drop('prediction_label', axis=1, inplace=True)
-
             # Access the correct score column based on the model name
             score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
 
             # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
+            filtered_prediction = prediction[prediction['Probability'] >= threshold]
 
             # Filter predictions based on recommendation
             if show_recommended and not show_not_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['Recommended'] == "Recommended"]
+                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
             elif show_not_recommended and not show_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['Recommended'] == "Not Recommended"]
+                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'Recommended', 'prediction_score']])
+            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'Probability']])
