@@ -73,9 +73,9 @@ if uploaded_file is not None:
     # Create a slider for the prediction threshold
     threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
 
-    # Create checkboxes for filtering by recommendation
-    show_recommended = st.checkbox("Show Recommended")
-    show_not_recommended = st.checkbox("Show Not Recommended")
+    # Create checkboxes for filtering by prediction_label
+    show_positive = st.checkbox("Show Positive Predictions")
+    show_negative = st.checkbox("Show Negative Predictions")
 
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
@@ -83,14 +83,14 @@ if uploaded_file is not None:
             score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
 
             # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['Probability'] >= threshold]
+            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
 
-            # Filter predictions based on recommendation
-            if show_recommended and not show_not_recommended:
+            # Filter predictions based on prediction_label
+            if show_positive and not show_negative:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
-            elif show_not_recommended and not show_recommended:
+            elif show_negative and not show_positive:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'Probability']])
+            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'prediction_score']])
