@@ -93,7 +93,7 @@ if uploaded_file is not None:
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'Probability']])
+            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'prediction_score']])
 
             # Display the recommendation based on prediction_label
             if filtered_prediction['prediction_label'].iloc[0] == 1:
