@@ -101,3 +101,17 @@ if uploaded_file is not None:
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
             st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
+
+            # Visualize predicted scores (if 'prediction_score' exists)
+            if 'prediction_score' in filtered_prediction.columns:
+                import matplotlib.pyplot as plt
+
+                plt.figure(figsize=(10, 6))
+                plt.bar(filtered_prediction['Player'], filtered_prediction[model_name])
+                plt.xlabel('Player')
+                plt.ylabel('Predicted Score')
+                plt.title(f"{model_name} - Predicted Scores")
+                plt.xticks(rotation=45)
+                st.pyplot()
+            else:
+                st.warning(f"Visualization not available for {model_name}. 'prediction_score' column is missing.")
