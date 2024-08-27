@@ -95,6 +95,9 @@ if uploaded_file is not None:
             filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
             filtered_prediction.drop('prediction_label', axis=1, inplace=True)
 
+            # Rename the score column to the corresponding model name
+            filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
+
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'Recommended', 'prediction_score']])
+            st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
