@@ -83,8 +83,8 @@ if uploaded_file is not None:
             score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
 
             # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['Probability'] >= threshold]
+            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[[score_column, 'Recommended', 'Probability']])
+            st.write(filtered_prediction[[score_column, 'Recommended', 'prediction_score']])
