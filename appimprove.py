@@ -91,8 +91,9 @@ if uploaded_file is not None:
             elif show_not_recommended and not show_recommended:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
-            # Rename the 'prediction_label' column to 'Recommended'
-            filtered_prediction.rename(columns={'prediction_label': 'Recommended'}, inplace=True)
+            # Rename the 'prediction_label' column to 'Recommended' and convert values
+            filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
+            filtered_prediction.drop('prediction_label', axis=1, inplace=True)
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
