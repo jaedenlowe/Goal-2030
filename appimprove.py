@@ -68,7 +68,7 @@ if uploaded_file is not None:
     st.write("Predictions:")
 
     # Create checkboxes for each model
-    model_checkboxes = st.multiselect("Select Models:", model_names)
+    model_checkboxes = st.multiselect("Select a Position/Role:", model_names)
 
     # Create a slider for the prediction threshold
     threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
