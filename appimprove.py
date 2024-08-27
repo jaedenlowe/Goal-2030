@@ -34,17 +34,17 @@ model_names = [
 
 # Dictionary mapping model names to their score column names
 score_column_map = {
-    "Traditional Keeper": "y1_tradkeeper",
-    "Sweeper Keeper": "y2_sweeperkeeper",
-    "Ball-Playing Defender": "y3_ballplayingdefender"
-    "No-Nonsense Defender": "y4_nononsensedefender"
-    "Full-Back": "y5_fullback"
-    "All-Action Midfielder": "y6_allactionmidfielder"
-    "Midfield Playmaker": "y7_midfieldplaymaker"
-    "Traditional Winger": "y8_traditionalwinger"
-    "Inverted Winger": "y9_invertedwinger"
-    "Goal Poacher": "y10_goalpoacher"
-    "Target Man": "y11_targetman"
+    Traditional Keeper: "y1_tradkeeper",
+    Sweeper Keeper: "y2_sweeperkeeper",
+    Ball-Playing Defender: "y3_ballplayingdefender",
+    No-Nonsense Defender: "y4_nononsensedefender",
+    Full-Back: "y5_fullback",
+    All-Action Midfielder: "y6_allactionmidfielder",
+    Midfield Playmaker: "y7_midfieldplaymaker",
+    Traditional Winger: "y8_traditionalwinger",
+    Inverted Winger: "y9_invertedwinger",
+    Goal Poacher: "y10_goalpoacher",
+    Target Man: "y11_targetman"
 }
 
 # Streamlit app
@@ -76,8 +76,8 @@ if uploaded_file is not None:
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
             # Rename the 'Label' column to 'Recommended' and convert to binary
-            prediction['Recommended'] = prediction['Label'].apply(lambda x: 1 if x == '1' else 0)
-            prediction.drop('Label', axis=1, inplace=True)
+            prediction['Recommended'] = prediction['prediction_label'].apply(lambda x: 1 if x == '1' else 0)
+            prediction.drop('prediction_label', axis=1, inplace=True)
 
             # Access the correct score column based on the model name
             score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
