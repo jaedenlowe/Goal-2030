@@ -91,12 +91,9 @@ if uploaded_file is not None:
             elif show_not_recommended and not show_recommended:
                 filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
+            # Rename the 'prediction_label' column to 'Recommended'
+            filtered_prediction.rename(columns={'prediction_label': 'Recommended'}, inplace=True)
+
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', score_column, 'prediction_label', 'prediction_score']])
-
-            # Display the recommendation based on prediction_label
-            if filtered_prediction['prediction_label'].iloc[0] == 1:
-                st.write("Recommended")
-            else:
-                st.write("Not Recommended")
+            st.write(filtered_prediction[['Player', score_column, 'Recommended', 'prediction_score']])
