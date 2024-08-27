@@ -87,4 +87,4 @@ if uploaded_file is not None:
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[[score_column, 'Recommended', 'prediction_score']])
+            st.write(filtered_prediction[['Player', score_column, 'Recommended', 'prediction_score']])
