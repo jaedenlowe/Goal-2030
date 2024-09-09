@@ -86,8 +86,6 @@ if uploaded_file is not None:
     # Role-based inputs (example for Goalkeepers)
     traditional_keepers_needed = st.number_input("Traditional Keepers Needed", min_value=0)
     sweeper_keepers_needed = st.number_input("Sweeper Keepers Needed", min_value=0)
-
-    # ... other role-based inputs for all roles in model_names
     ball_playing_defenders_needed = st.number_input("Ball-Playing Defenders Needed", min_value=0)
     no_nonsense_defenders_needed = st.number_input("No-Nonsense Defenders Needed", min_value=0)
     full_backs_needed = st.number_input("Full-Backs Needed", min_value=0)
@@ -100,15 +98,24 @@ if uploaded_file is not None:
 
     # Squad generation logic
     def generate_squad(predictions, roles_needed, positions):
-        squad = []
+        squad = {}
         for role, needed in roles_needed.items():
             filtered_predictions = []
             for prediction_df in predictions:
                 if prediction_df['prediction_label'] == role:
                     filtered_predictions.append(prediction_df.copy())
-            sorted_predictions = filtered_predictions.sort_values(by=role, ascending=False)
-            squad.extend(sorted_predictions[:needed])
-        return pd.concat(squad)
+            sorted_predictions = pd.concat(filtered_predictions).sort_values(by=role, ascending=False)[:needed]
+
+        # Extract relevant information from sorted predictions
+            for index, row in sorted_predictions.iterrows():
+                player_name = row['Player Name']  # Assuming a 'Player Name' column exists
+                score = row[role]  # Assuming the score column name is the same as the role
+                squad.setdefault(positions[role], []).append({
+                    'Role': role,
+                    'Player Name': player_name,
+                    'Score': score
+                })
+        return squad
 
     # ... (existing code)
 
