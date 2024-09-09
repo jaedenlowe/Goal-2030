@@ -119,6 +119,20 @@ if uploaded_file is not None:
 
     # Generate and display squad
     if st.button("Generate Squad") and any(count > 0 for count in roles_needed.values()):
+        # Define roles_needed here
+        roles_needed = {
+            "Traditional Keeper": traditional_keepers_needed,
+            "Sweeper Keeper": sweeper_keepers_needed,
+            "Ball-Playing Defender": ball_playing_defenders_needed,
+            "No-Nonsense Defender": no_nonsense_defenders_needed,
+            "Full-Back": full_backs_needed,
+            "All-Action Midfielder": all_action_midfielders_needed,
+            "Midfield Playmaker": midfield_playmakers_needed,
+            "Traditional Winger": traditional_wingers_needed,
+            "Inverted Winger": inverted_wingers_needed,
+            "Goal Poacher": goal_poachers_needed,
+            "Target Man": target_men_needed
+        }
         squad = generate_squad(predictions, roles_needed, positions_needed)
         st.write("Recommended Squad:")
         st.write(squad)
