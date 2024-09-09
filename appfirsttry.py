@@ -106,38 +106,19 @@ if uploaded_file is not None:
             for prediction_df in predictions:
                 if prediction_df['prediction_label'].isin([role]).any():
                     filtered_predictions.append(prediction_df.copy())
-            # Check if filtered_predictions is empty before concatenation
+            # Check for empty list and handle accordingly
             if filtered_predictions:
                 sorted_predictions = pd.concat(filtered_predictions, ignore_index=True).sort_values(by=role, ascending=False)
                 squad.extend(sorted_predictions[:needed])
             else:
-                # Handle the case where no predictions match the role
+                # No predictions for this role - handle appropriately
                 st.warning(f"No predictions found for role: {role}")
         return pd.concat(squad)
 
     # ... (existing code)
 
     # Generate and display squad
-    if st.button("Generate Squad"):
-        roles_needed = {
-            "Traditional Keeper": traditional_keepers_needed,
-            "Sweeper Keeper": sweeper_keepers_needed,
-            "Ball-Playing Defender": ball_playing_defenders_needed,
-            "No-Nonsense Defender": no_nonsense_defenders_needed,
-            "Full-Back": full_backs_needed,
-            "All-Action Midfielder": all_action_midfielders_needed,
-            "Midfield Playmaker": midfield_playmakers_needed,
-            "Traditional Winger": traditional_wingers_needed,
-            "Inverted Winger": inverted_wingers_needed,
-            "Goal Poacher": goal_poachers_needed,
-            "Target Man": target_men_needed
-        }
-        positions_needed = {
-            "Goalkeeper": goalkeepers_needed,
-            "Defender": defenders_needed,
-            "Midfielder": midfielders_needed,
-            "Attacker": attackers_needed
-        }
+    if st.button("Generate Squad") and any(count > 0 for count in roles_needed.values()):
         squad = generate_squad(predictions, roles_needed, positions_needed)
         st.write("Recommended Squad:")
         st.write(squad)
