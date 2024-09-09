@@ -80,7 +80,7 @@ if uploaded_file is not None:
     for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
             # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
+            score_column = score_column_map.get(model_name, "score") # Default to "score" if not found
 
             # Filter predictions based on the threshold
             filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
