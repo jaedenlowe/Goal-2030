@@ -47,20 +47,25 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
+# Function to display the predictions for a given role
+def display_role_predictions(df, role):
+    score_column = score_column_map.get(role)
+    if score_column:
+        st.write(f"## {role} Predictions")
+        st.dataframe(df[[score_column]].sort_values(by=score_column, ascending=False))
+    else:
+        st.write(f"Role {role} does not have an associated score column.")
+
 # Additional functions for squad generation
 def generate_squad(prediction_results, num_players_per_position, selected_roles):
     """Generates a squad based on prediction results, number of players per position, and selected roles."""
     squad = []
     for position, num_players in num_players_per_position.items():
-        # Determine the roles for the given position
         roles = selected_roles.get(position, [])
-        
         for role in roles:
-            # Get the corresponding score column for the role
             score_column = score_column_map.get(role)
 
             if score_column:
-                # Filter predictions based on the score column
                 position_predictions = [result for result in prediction_results if score_column in result]
 
                 # Sort predictions by score in descending order
@@ -80,54 +85,59 @@ def display_squad(squad):
     for position in squad:
         st.write(position)
 
-# Example Streamlit input section
-st.write("## Define squad roles and number of players for each position")
-num_goalkeepers = st.number_input("Goalkeepers", min_value=0, value=1)
-num_defenders = st.number_input("Defenders", min_value=0, value=4)
-num_midfielders = st.number_input("Midfielders", min_value=0, value=4)
-num_attackers = st.number_input("Attackers", min_value=0, value=2)
+# CSV Upload Section
+uploaded_file = st.file_uploader("Upload your predictions CSV file", type=["csv"])
 
-# Role selection (could be enhanced further based on the original Streamlit UI logic)
-st.write("**Goalkeeper Roles:**")
-num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=num_goalkeepers, value=1)
-num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=num_goalkeepers, value=0)
-st.write("**Defender Roles:**")
-num_ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=num_defenders, value=2)
-num_no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=num_defenders, value=1)
-num_fullbacks = st.number_input("Full-Backs", min_value=0, max_value=num_defenders, value=1)
-st.write("**Midfielder Roles:**")
-num_all_action_midfielders = st.number_input("All-Action Midfielders", min_value=0, max_value=num_midfielders, value=2)
-num_midfield_playmakers = st.number_input("Midfield Playmakers", min_value=0, max_value=num_midfielders, value=2)
-num_traditional_wingers = st.number_input("Traditional Wingers", min_value=0, max_value=num_midfielders, value=1)
-num_inverted_wingers = st.number_input("Inverted Wingers", min_value=0, max_value=num_midfielders, value=0)
-st.write("**Attacker Roles:**")
-num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
-num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
 
-# Squad generation section
-if st.button("Generate Squad"):
-    # Define number of players per position
-    num_players_per_position = {
-        "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
-        "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
-        "Midfielder": num_all_action_midfielders + num_midfield_playmakers + num_traditional_wingers + num_inverted_wingers,
-        "Attacker": num_goal_poachers + num_target_men
-    }
+    st.write("## Displaying CSV Data")
+    st.dataframe(df.head())
 
-    # Create a dictionary to store the selected roles for each position
-    selected_roles = {
-        "Goalkeeper": ["Traditional Keeper"] * num_traditional_keepers + ["Sweeper Keeper"] * num_sweeper_keepers,
-        "Defender": ["Ball-Playing Defender"] * num_ball_playing_defenders + ["No-Nonsense Defender"] * num_no_nonsense_defenders + ["Full-Back"] * num_fullbacks,
-        "Midfielder": ["All-Action Midfielder"] * num_all_action_midfielders + ["Midfield Playmaker"] * num_midfield_playmakers + ["Traditional Winger"] * num_traditional_wingers + ["Inverted Winger"] * num_inverted_wingers,
-        "Attacker": ["Goal Poacher"] * num_goal_poachers + ["Target Man"] * num_target_men
-    }
+    # Display predictions for each role
+    for role in model_names:
+        display_role_predictions(df, role)
 
-    # Assume predictions is a preloaded dataframe containing the prediction results.
-    # For testing purposes, this would be passed to the squad generation.
-    predictions = pd.DataFrame()  # Replace this with actual prediction data
+    # Squad generation feature
+    st.write("## Define squad roles and number of players for each position")
+    num_goalkeepers = st.number_input("Goalkeepers", min_value=0, value=1)
+    num_defenders = st.number_input("Defenders", min_value=0, value=4)
+    num_midfielders = st.number_input("Midfielders", min_value=0, value=4)
+    num_attackers = st.number_input("Attackers", min_value=0, value=2)
 
-    # Generate the squad using the generate_squad function
-    squad = generate_squad(predictions, num_players_per_position, selected_roles)
+    st.write("**Goalkeeper Roles:**")
+    num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=num_goalkeepers, value=1)
+    num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=num_goalkeepers, value=0)
+    st.write("**Defender Roles:**")
+    num_ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=num_defenders, value=2)
+    num_no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=num_defenders, value=1)
+    num_fullbacks = st.number_input("Full-Backs", min_value=0, max_value=num_defenders, value=1)
+    st.write("**Midfielder Roles:**")
+    num_all_action_midfielders = st.number_input("All-Action Midfielders", min_value=0, max_value=num_midfielders, value=2)
+    num_midfield_playmakers = st.number_input("Midfield Playmakers", min_value=0, max_value=num_midfielders, value=2)
+    num_traditional_wingers = st.number_input("Traditional Wingers", min_value=0, max_value=num_midfielders, value=1)
+    num_inverted_wingers = st.number_input("Inverted Wingers", min_value=0, max_value=num_midfielders, value=0)
+    st.write("**Attacker Roles:**")
+    num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
+    num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
 
-    # Display the generated squad
-    display_squad(squad)
+    if st.button("Generate Squad"):
+        num_players_per_position = {
+            "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
+            "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
+            "Midfielder": num_all_action_midfielders + num_midfield_playmakers + num_traditional_wingers + num_inverted_wingers,
+            "Attacker": num_goal_poachers + num_target_men
+        }
+
+        selected_roles = {
+            "Goalkeeper": ["Traditional Keeper"] * num_traditional_keepers + ["Sweeper Keeper"] * num_sweeper_keepers,
+            "Defender": ["Ball-Playing Defender"] * num_ball_playing_defenders + ["No-Nonsense Defender"] * num_no_nonsense_defenders + ["Full-Back"] * num_fullbacks,
+            "Midfielder": ["All-Action Midfielder"] * num_all_action_midfielders + ["Midfield Playmaker"] * num_midfield_playmakers + ["Traditional Winger"] * num_traditional_wingers + ["Inverted Winger"] * num_inverted_wingers,
+            "Attacker": ["Goal Poacher"] * num_goal_poachers + ["Target Man"] * num_target_men
+        }
+
+        # Generate the squad using the generate_squad function
+        squad = generate_squad(df, num_players_per_position, selected_roles)
+
+        # Display the generated squad
+        display_squad(squad)
