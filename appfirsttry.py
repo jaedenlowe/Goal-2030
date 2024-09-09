@@ -106,8 +106,13 @@ if uploaded_file is not None:
             for prediction_df in predictions:
                 if prediction_df['prediction_label'].isin([role]).any():
                     filtered_predictions.append(prediction_df.copy())
-            sorted_predictions = pd.concat(filtered_predictions, ignore_index=True).sort_values(by=role, ascending=False)
-            squad.extend(sorted_predictions[:needed])
+            # Check if filtered_predictions is empty before concatenation
+            if filtered_predictions:
+                sorted_predictions = pd.concat(filtered_predictions, ignore_index=True).sort_values(by=role, ascending=False)
+                squad.extend(sorted_predictions[:needed])
+            else:
+                # Handle the case where no predictions match the role
+                st.warning(f"No predictions found for role: {role}")
         return pd.concat(squad)
 
     # ... (existing code)
