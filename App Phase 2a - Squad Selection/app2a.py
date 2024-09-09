@@ -102,7 +102,7 @@ if uploaded_file is not None:
     def generate_squad(predictions, roles_needed, positions):
         squad = []
         for role, needed in roles_needed.items():
-            filtered_predictions = predictions[predictions['prediction_label'] == role]
+            filtered_predictions = predictions[predictions['prediction_label'] == role].copy()  # Use .copy() to avoid SettingWithCopy warnings
             sorted_predictions = filtered_predictions.sort_values(by=role, ascending=False)
             squad.extend(sorted_predictions[:needed])
         return pd.concat(squad)
