@@ -54,18 +54,15 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles)
     """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
     squad = []
-    for role in selected_roles:
-        # Get the corresponding score column for this role
-        score_column = score_column_map[role]
+    for position, num_players in num_players_per_position.items():
+        # Filter predictions for the current position
+        position_predictions = [result for result in prediction_results if any(role in selected_roles[position] for role in result['model_names'])]
 
-        # Filter predictions for the current role
-        role_predictions = prediction_results[['Player', score_column]].copy()
+        # Sort predictions by prediction_score in descending order
+        position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
 
-        # Sort predictions by score in descending order
-        role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
-
-        # Select the top N players based on the number of players for this role
-        top_players = role_predictions.head(num_players_per_position[role])
+        # Select the top N players based on the number of players for this position
+        top_players = position_predictions[:num_players]
 
         # Add recommended tag
         top_players['Recommended'] = 'Recommended'
