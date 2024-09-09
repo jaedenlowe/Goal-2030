@@ -55,8 +55,8 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles)
 
     squad = []
     for position, num_players in num_players_per_position.items():
-        # Filter predictions for the current position
-        position_predictions = [result for result in prediction_results if any(role in selected_roles[position] for role in result['model_names'])]
+        # Filter predictions based on selected roles
+        position_predictions = [result for result in prediction_results if result['model_names'] in selected_roles[position]]
 
         # Sort predictions by prediction_score in descending order
         position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
