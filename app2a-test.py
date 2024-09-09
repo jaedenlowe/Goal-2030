@@ -51,27 +51,32 @@ score_column_map = {
 
 # Additional functions for squad generation
 def generate_squad(prediction_results, num_players_per_position, selected_roles):
-  """Generates a squad based on prediction results, number of players per position, and selected roles."""
+    """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
-  squad = []
-  for position, num_players in num_players_per_position.items():
-    # Filter predictions for the current position
-    position_predictions = [result for result in prediction_results if result['model_names'].startswith(position)]
+    squad = []
+    for role in selected_roles:
+        # Get the corresponding score column for this role
+        score_column = score_column_map[role]
 
-    # Sort predictions by prediction_score in descending order
-    position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
+        # Filter predictions for the current role
+        role_predictions = prediction_results[['Player', score_column]].copy()
 
-    # Select the top num_players based on prediction_score and selected roles
-    selected_players = []
-    for player in position_predictions:
-      if player['model_names'] in selected_roles[position]:
-        selected_players.append(player)
-        if len(selected_players) >= num_players:
-          break
+        # Sort predictions by score in descending order
+        role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
 
-    squad.extend(selected_players)
+        # Select the top N players based on the number of players for this role
+        top_players = role_predictions.head(num_players_per_position[role])
 
-  return squad
+        # Add recommended tag
+        top_players['Recommended'] = 'Recommended'
+
+        # Append the top players to the squad
+        squad.append(top_players)
+
+    # Concatenate all roles into one DataFrame
+    final_squad = pd.concat(squad, ignore_index=True)
+
+    return final_squad
 
 def display_squad(squad):
   """Displays the generated squad."""
