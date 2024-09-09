@@ -49,17 +49,17 @@ score_column_map = {
 
 
 
-# Additional functions for squad generation
 def generate_squad(prediction_results, num_players_per_position, selected_roles):
     """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
     squad = []
     for position, num_players in num_players_per_position.items():
-        # Filter predictions based on selected roles
-        position_predictions = [result for result in prediction_results if result['model_names'] in selected_roles[position]]
+        # Filter predictions based on selected roles and their corresponding score columns
+        position_predictions = [result for result in prediction_results if any(result[score_column_map[role]] >= 0.5 for role in selected_roles[position])]
 
-        # Sort predictions by prediction_score in descending order
-        position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
+        # Sort predictions by the score column corresponding to the first selected role
+        score_column = score_column_map[selected_roles[position][0]]
+        position_predictions = sorted(position_predictions, key=lambda x: x[score_column], reverse=True)
 
         # Select the top N players based on the number of players for this position
         top_players = position_predictions[:num_players]
@@ -74,6 +74,7 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles)
     final_squad = pd.concat(squad, ignore_index=True)
 
     return final_squad
+    
 
 def display_squad(squad):
   """Displays the generated squad."""
