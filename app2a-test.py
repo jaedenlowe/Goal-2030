@@ -49,28 +49,27 @@ score_column_map = {
 
 
 
-
 # Additional functions for squad generation
 def generate_squad(prediction_results, num_players_per_position, selected_roles):
   """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
   squad = []
   for position, num_players in num_players_per_position.items():
-    # Check if 'model_name' is a valid key in the results
-    for result in prediction_results:
-        if 'model_name' not in result:
-            st.write(f"Error: 'model_name' not found in result keys: {result.keys()}")
-            continue
-
     # Filter predictions for the current position
-    position_predictions = [result for result in prediction_results if result.get('model_name') == position]
+    position_predictions = [result for result in prediction_results if result['model_names'].startswith(position)]
 
-    # Sort predictions by prediction score in descending order
+    # Sort predictions by prediction_score in descending order
     position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
 
-    # Select the top N players based on the sorted predictions
-    squad.append(position_predictions[:num_players])
+    # Select the top num_players based on prediction_score and selected roles
+    selected_players = []
+    for player in position_predictions:
+      if player['model_names'] in selected_roles[position]:
+        selected_players.append(player)
+        if len(selected_players) >= num_players:
+          break
 
+    squad.extend(selected_players)
 
   return squad
 
@@ -79,7 +78,7 @@ def display_squad(squad):
 
   st.header("Generated Squad")
   for player in squad:
-    st.write(f"- {player['Player']}: {player['model_name']} ({player['prediction_score']:.2f})")
+    st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
