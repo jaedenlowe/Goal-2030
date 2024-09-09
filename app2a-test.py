@@ -47,6 +47,37 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
+# Additional functions for squad generation
+def generate_squad(prediction_results, num_players_per_position, selected_roles):
+  """Generates a squad based on prediction results, number of players per position, and selected roles."""
+
+  squad = []
+  for position, num_players in num_players_per_position.items():
+    # Filter predictions for the current position
+    position_predictions = [result for result in prediction_results if result['model_name'].startswith(position)]
+
+    # Sort predictions by prediction_score in descending order
+    position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
+
+    # Select the top num_players based on prediction_score and selected roles
+    selected_players = []
+    for player in position_predictions:
+      if player['model_name'] in selected_roles[position]:
+        selected_players.append(player)
+        if len(selected_players) >= num_players:
+          break
+
+    squad.extend(selected_players)
+
+  return squad
+
+def display_squad(squad):
+  """Displays the generated squad."""
+
+  st.header("Generated Squad")
+  for player in squad:
+    st.write(f"- {player['Player']}: {player['model_name']} ({player['prediction_score']:.2f})")
+
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
 
@@ -54,53 +85,53 @@ st.title("Player Attribute Prediction and Squad Generation")
 uploaded_file = st.file_uploader("Upload a CSV file with player attributes", type="csv")
 
 if uploaded_file is not None:
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(uploaded_file)
+  # Read the CSV file into a DataFrame
+  df = pd.read_csv(uploaded_file)
 
-    # Display the dataframe
-    st.write("Uploaded DataFrame:")
-    st.write(df.head())
+  # Display the dataframe
+  st.write("Uploaded DataFrame:")
+  st.write(df.head())
 
-    # Make predictions for each model
-    predictions = [predict_model(model, data=df) for model in models]
+  # Make predictions for each model
+  predictions = [predict_model(model, data=df) for model in models]
 
-    # Display predictions
-    st.write("Predictions:")
+  # Display predictions
+  st.write("Predictions:")
 
-    # Create checkboxes for each model
-    model_checkboxes = st.multiselect("Select a Position/Role:", model_names)
+  # Create checkboxes for each model
+  model_checkboxes = st.multiselect("Select a Position/Role:", model_names)
 
-    # Create a slider for the prediction threshold
-    threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
+  # Create a slider for the prediction threshold
+  threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
 
-    # Create checkboxes for filtering by prediction_label
-    show_recommended = st.checkbox("Show Recommended")
-    show_not_recommended = st.checkbox("Show Not Recommended")
+  # Create checkboxes for filtering by prediction_label
+  show_recommended = st.checkbox("Show Recommended")
+  show_not_recommended = st.checkbox("Show Not Recommended")
 
-    for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
-        if model_name in model_checkboxes:
-            # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "score") # Default to "score" if not found
+  for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
+    if model_name in model_checkboxes:
+      # Access the correct score column based on the model name
+      score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
 
-            # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
+      # Filter predictions based on the threshold
+      filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
 
-            # Filter predictions based on prediction_label
-            if show_recommended and not show_not_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
-            elif show_not_recommended and not show_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
+      # Filter predictions based on prediction_label
+      if show_recommended and not show_not_recommended:
+        filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
+      elif show_not_recommended and not show_recommended:
+        filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
 
-            # Rename the 'prediction_label' column to 'Recommended' and convert values
-            filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
-            filtered_prediction.drop('prediction_label', axis=1, inplace=True)
+      # Rename the 'prediction_label' column to 'Recommended' and convert values
+      filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
+      filtered_prediction.drop('prediction_label', axis=1, inplace=True)
 
-            # Rename the score column to the corresponding model name
-            filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
+      # Rename the score column to the corresponding model name
+      filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
 
-            # Display model name and filtered prediction results
-            st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
+      # Display model name and filtered prediction results
+      st.header(f"{model_name}")
+      st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
 
 # Squad generation section
 st.subheader("Squad Generation")
