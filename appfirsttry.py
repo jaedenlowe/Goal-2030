@@ -119,7 +119,6 @@ if uploaded_file is not None:
 
     # Generate and display squad
     if st.button("Generate Squad") and any(count > 0 for count in roles_needed.values()):
-        # Define roles_needed here
         roles_needed = {
             "Traditional Keeper": traditional_keepers_needed,
             "Sweeper Keeper": sweeper_keepers_needed,
