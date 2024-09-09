@@ -106,7 +106,7 @@ if uploaded_file is not None:
             for prediction_df in predictions:
                 if prediction_df['prediction_label'].isin([role]).any():
                     filtered_predictions.append(prediction_df.copy())
-            sorted_predictions = filtered_predictions.sort_values(by=role, ascending=False)
+            sorted_predictions = pd.concat(filtered_predictions, ignore_index=True).sort_values(by=role, ascending=False)
             squad.extend(sorted_predictions[:needed])
         return pd.concat(squad)
 
