@@ -47,27 +47,30 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
+
+
+
 # Additional functions for squad generation
 def generate_squad(prediction_results, num_players_per_position, selected_roles):
   """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
   squad = []
   for position, num_players in num_players_per_position.items():
-    # Filter predictions for the current position
-    position_predictions = [result for result in prediction_results if result['model_name'].startswith(position)]
+    # Check if 'model_name' is a valid key in the results
+    for result in prediction_results:
+        if 'model_name' not in result:
+            st.write(f"Error: 'model_name' not found in result keys: {result.keys()}")
+            continue
 
-    # Sort predictions by prediction_score in descending order
+    # Filter predictions for the current position
+    position_predictions = [result for result in prediction_results if result.get('model_name') == position]
+
+    # Sort predictions by prediction score in descending order
     position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
 
-    # Select the top num_players based on prediction_score and selected roles
-    selected_players = []
-    for player in position_predictions:
-      if player['model_name'] in selected_roles[position]:
-        selected_players.append(player)
-        if len(selected_players) >= num_players:
-          break
+    # Select the top N players based on the sorted predictions
+    squad.append(position_predictions[:num_players])
 
-    squad.extend(selected_players)
 
   return squad
 
