@@ -104,7 +104,7 @@ if uploaded_file is not None:
         for role, needed in roles_needed.items():
             filtered_predictions = []
             for prediction_df in predictions:
-                if prediction_df['prediction_label'] == role:
+                if prediction_df['prediction_label'].isin([role]).any():
                     filtered_predictions.append(prediction_df.copy())
             sorted_predictions = filtered_predictions.sort_values(by=role, ascending=False)
             squad.extend(sorted_predictions[:needed])
