@@ -77,27 +77,42 @@ if uploaded_file is not None:
     show_recommended = st.checkbox("Show Recommended")
     show_not_recommended = st.checkbox("Show Not Recommended")
 
-    for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
-        if model_name in model_checkboxes:
-            # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
+    # Additional input fields
+    goalkeepers_needed = st.number_input("Goalkeepers Needed", min_value=0)
+    defenders_needed = st.number_input("Defenders Needed", min_value=0)
+    midfielders_needed = st.number_input("Midfielders Needed", min_value=0)
+    attackers_needed = st.number_input("Attackers Needed", min_value=0)
 
-            # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
+    # Role-based inputs (example for Goalkeepers)
+    traditional_keepers_needed = st.number_input("Traditional Keepers Needed", min_value=0)
+    sweeper_keepers_needed = st.number_input("Sweeper Keepers Needed", min_value=0)
 
-            # Filter predictions based on prediction_label
-            if show_recommended and not show_not_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
-            elif show_not_recommended and not show_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
+    # ... (other role-based inputs)
 
-            # Rename the 'prediction_label' column to 'Recommended' and convert values
-            filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
-            filtered_prediction.drop('prediction_label', axis=1, inplace=True)
+    # Squad generation logic
+    def generate_squad(predictions, roles_needed, positions):
+        squad = []
+        for role, needed in roles_needed.items():
+            filtered_predictions = predictions[predictions['prediction_label'] == role]
+            sorted_predictions = filtered_predictions.sort_values(by=role, ascending=False)
+            squad.extend(sorted_predictions[:needed])
+        return pd.concat(squad)
 
-            # Rename the score column to the corresponding model name
-            filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
+    # ... (existing code)
 
-            # Display model name and filtered prediction results
-            st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
+    # Generate and display squad
+    if st.button("Generate Squad"):
+        roles_needed = {
+            "Traditional Keeper": traditional_keepers_needed,
+            "Sweeper Keeper": sweeper_keepers_needed,
+            # ... other roles
+        }
+        positions_needed = {
+            "Goalkeeper": goalkeepers_needed,
+            "Defender": defenders_needed,
+            "Midfielder": midfielders_needed,
+            "Attacker": attackers_needed
+        }
+        squad = generate_squad(predictions, roles_needed, positions_needed)
+        st.write("Recommended Squad:")
+        st.write(squad)
