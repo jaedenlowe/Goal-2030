@@ -184,6 +184,14 @@ if st.button("Generate Squad"):
         ]
     }
 
+
+    # Define number of players per position
+    num_players_per_position = {
+        "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
+        "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
+        "Midfielder": num_all_action_midfielders + num_midfield_playmakers + num_traditional_wingers + num_inverted_wingers,
+        "Attacker": num_goal_poachers + num_target_men
+
     # Generate the squad using the generate_squad function
     squad = generate_squad(predictions, num_players_per_position, selected_roles)
 
