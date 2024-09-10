@@ -142,7 +142,7 @@ def select_players(role, count):
         return pd.DataFrame()  # Return an empty DataFrame if no players are needed for this role
     
     # Sort players based on the score in the specified role and select the top 'count' players
-    sorted_players = df_predictions[['Player', role]].sort_values(by=role, ascending=False).head(count)
+    sorted_players = df[['Player', role]].sort_values(by=role, ascending=False).head(count)
     return sorted_players[['Player', role]]
 
 # Example role-wise player selection
