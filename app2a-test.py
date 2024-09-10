@@ -186,8 +186,8 @@ if uploaded_file is not None:
     # Input for number of players per position
     num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=3)
     num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=8)
-    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=8)
-    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=4)
+    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=4)
+    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=3)
 
     # Input for number of each role per position
     st.write("**Goalkeeper Roles:**")
