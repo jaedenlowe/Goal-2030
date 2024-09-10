@@ -41,7 +41,7 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
-def generate_squad(prediction_results, num_players_per_position):
+def generate_squad_with_fallback(prediction_results, num_players_per_position):
     # Initialize a set to store the selected players and their roles
     selected_players = set()
     squad = []
@@ -89,9 +89,20 @@ def generate_squad(prediction_results, num_players_per_position):
             (sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))
         ]
 
-        # Check if there are enough players for this role
+        # If not enough players are found for the role, try using fallback players
         if len(role_players) < num_players:
             st.write(f"Warning: Not enough players available for role: {role}. Needed {num_players}, found {len(role_players)}.")
+            
+            # Find additional players who have lower scores in this role but can fill it
+            fallback_players = sorted_scores[
+                (~sorted_scores['Player'].isin(selected_players)) & (sorted_scores[role] > 0)
+            ].sort_values(by=role, ascending=False)
+
+            # Calculate how many more players we need to fill the role
+            remaining_players_needed = num_players - len(role_players)
+
+            # Add fallback players to the role_players DataFrame
+            role_players = pd.concat([role_players, fallback_players.head(remaining_players_needed)])
 
         # Select the top players for the current role, up to the specified number
         top_players = role_players.head(num_players)
@@ -118,6 +129,7 @@ def generate_squad(prediction_results, num_players_per_position):
 
     # Return the final squad DataFrame
     return final_squad
+
 
 
 
