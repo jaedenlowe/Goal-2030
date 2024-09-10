@@ -41,7 +41,7 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
-def generate_squad_with_fallback(prediction_results, num_players_per_position):
+def generate_squad(prediction_results, num_players_per_position):
     # Initialize a set to store the selected players and their roles
     selected_players = set()
     squad = []
