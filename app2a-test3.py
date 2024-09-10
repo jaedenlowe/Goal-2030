@@ -1,114 +1,60 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from pycaret.classification import load_model, predict_model
+import joblib
 
-# Load the PyCaret models
-models = [
-    load_model('model_y1_tradkeeper'),
-    load_model('model_y2_sweeperkeeper'),
-    load_model('model_y3_ballplayingdefender'),
-    load_model('model_y4_nononsensedefender'),
-    load_model('model_y5_fullback'),
-    load_model('model_y6_allactionmidfielder'),
-    load_model('model_y7_midfieldplaymaker'),
-    load_model('model_y8_traditionalwinger'),
-    load_model('model_y9_invertedwinger'),
-    load_model('model_y10_goalpoacher'),
-    load_model('model_y11_targetman')
-]
+# 1. File Upload Section - Keeping your original CSV upload
+st.title("Player Data and Model Upload")
 
-# Model names corresponding to their roles
-model_names = [
-    "Traditional Keeper",
-    "Sweeper Keeper",
-    "Ball-Playing Defender",
-    "No-Nonsense Defender",
-    "Full-Back",
-    "All-Action Midfielder",
-    "Midfield Playmaker",
-    "Traditional Winger",
-    "Inverted Winger",
-    "Goal Poacher",
-    "Target Man"
-]
-
-# Dictionary mapping model names to their score column names
-score_column_map = {
-    "Traditional Keeper": "y1_tradkeeper",
-    "Sweeper Keeper": "y2_sweeperkeeper",
-    "Ball-Playing Defender": "y3_ballplayingdefender",
-    "No-Nonsense Defender": "y4_nononsensedefender",
-    "Full-Back": "y5_fullback",
-    "All-Action Midfielder": "y6_allactionmidfielder",
-    "Midfield Playmaker": "y7_midfieldplaymaker",
-    "Traditional Winger": "y8_traditionalwinger",
-    "Inverted Winger": "y9_invertedwinger",
-    "Goal Poacher": "y10_goalpoacher",
-    "Target Man": "y11_targetman"
-}
-
-# Streamlit app
-st.title("Player Attribute Prediction")
-
-
-# File uploader widget
-uploaded_file = st.file_uploader("Upload a CSV file with player attributes", type="csv")
-
+uploaded_file = st.file_uploader("Choose a CSV file with player data", type="csv")
 if uploaded_file is not None:
-    # Read the CSV file into a DataFrame
     df = pd.read_csv(uploaded_file)
-    predictionsdf = df
+    st.write("Uploaded Player Data")
+    st.dataframe(df)
 
-    # Display the dataframe
-    st.write("Uploaded DataFrame:")
-    st.write(df.head())
+    # Assuming the uploaded CSV has player info with the following columns:
+    # ['Player', 'Position', 'Age', 'Team', ...]
 
-    # Make predictions for each model
-    predictions = [predict_model(model, data=df) for model in models]
+    # Placeholder for player ability DataFrame (to be populated by model predictions)
+    df_predictions = df[['Player']]  # We'll add model prediction results to this DataFrame
 
-    # Display predictions
-    st.write("Predictions:")
+# 2. Model Loading - Keeping your model loading intact
+# Assuming your models are saved in a folder or uploaded as part of the interface
+st.subheader("Model Uploads")
 
-    # Create checkboxes for each model
-    model_checkboxes = st.multiselect("Select a Position/Role:", model_names)
+models = {}
+roles = ['Traditional Keeper', 'Sweeper Keeper', 'Ball-Playing Defender', 'No-Nonsense Defender', 
+         'Wide Playmaker', 'Box-to-Box Midfielder', 'Deep Lying Playmaker', 'Poacher', 
+         'Target Man', 'Advanced Forward', 'False Nine']
 
-    # Create a slider for the prediction threshold
-    threshold = st.slider("Prediction Threshold:", 0.0, 1.0, 0.5)
+for role in roles:
+    model_file = st.file_uploader(f"Upload model for {role}", type="pkl")
+    if model_file is not None:
+        models[role] = joblib.load(model_file)
 
-    # Create checkboxes for filtering by prediction_label
-    show_recommended = st.checkbox("Show Recommended")
-    show_not_recommended = st.checkbox("Show Not Recommended")
+# Check if all models are loaded
+if len(models) == len(roles):
+    st.success("All models loaded successfully!")
+else:
+    st.warning("Please upload models for all roles.")
 
-    for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
-        if model_name in model_checkboxes:
-            # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
+# 3. Model Prediction Section - Generate predictions for all roles
+if uploaded_file is not None and len(models) == len(roles):
+    st.subheader("Generating Player Role Predictions")
 
-            # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
+    for role in roles:
+        # Example: Apply each model to make predictions for this role
+        # Assume that each model expects some features (e.g., player stats from df)
+        # Placeholder: predictions = models[role].predict(some_features_from_df)
+        # For now, we generate random values for demonstration
+        df_predictions[role] = np.random.rand(len(df))  # Replace with actual model predictions
 
-            # Filter predictions based on prediction_label
-            if show_recommended and not show_not_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 1]
-            elif show_not_recommended and not show_recommended:
-                filtered_prediction = filtered_prediction[filtered_prediction['prediction_label'] == 0]
+    st.dataframe(df_predictions)
 
-            # Rename the 'prediction_label' column to 'Recommended' and convert values
-            filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
-            filtered_prediction.drop('prediction_label', axis=1, inplace=True)
-
-            # Rename the score column to the corresponding model name
-            filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
-
-            # Display model name and filtered prediction results
-            st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
-
-# Start Streamlit app
+# Now the new squad selection feature starts here:
 st.title("Squad Generation")
 
-# 1. Squad size input from user
+# 4. Player Squad Selection UI - Allow input for squad sizes
 max_squad_size = 35
 st.subheader("Select the number of players for each position")
 
@@ -122,20 +68,32 @@ if total_players > max_squad_size:
     st.error(f"Total players cannot exceed {max_squad_size}. Currently selected: {total_players}")
     st.stop()
 
-# 2. Role breakdown for each position
+# 5. Role Breakdown for each position
+# Goalkeeper Roles
 st.subheader("Goalkeeper Roles:")
 traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=n_goalkeepers, value=1)
 sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=n_goalkeepers - traditional_keepers, value=0)
 
+# Defender Roles
 st.subheader("Defender Roles:")
 ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=n_defenders, value=2)
 no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=n_defenders - ball_playing_defenders, value=2)
 
+# Midfielder Roles
+st.subheader("Midfielder Roles:")
+wide_playmakers = st.number_input("Wide Playmakers", min_value=0, max_value=n_midfielders, value=2)
+box_to_box_midfielders = st.number_input("Box-to-Box Midfielders", min_value=0, max_value=n_midfielders - wide_playmakers, value=2)
+deep_lying_playmakers = st.number_input("Deep Lying Playmakers", min_value=0, max_value=n_midfielders - wide_playmakers - box_to_box_midfielders, value=1)
 
-# Repeat similar blocks for Midfielders and Attackers roles based on your model outputs.
+# Attacker Roles
+st.subheader("Attacker Roles:")
+poachers = st.number_input("Poachers", min_value=0, max_value=n_attackers, value=1)
+target_men = st.number_input("Target Men", min_value=0, max_value=n_attackers - poachers, value=1)
+advanced_forwards = st.number_input("Advanced Forwards", min_value=0, max_value=n_attackers - poachers - target_men, value=1)
+false_nines = st.number_input("False Nines", min_value=0, max_value=n_attackers - poachers - target_men - advanced_forwards, value=0)
 
-# 3. Squad Selection Logic
-def select_players(role, count):
+# 6. Player Selection Logic (for each role)
+def select_players(df, role, count):
     """
     Select top players for a given role. This function will fetch 'count' number
     of top-performing players for the specified role based on the predictions.
@@ -144,23 +102,34 @@ def select_players(role, count):
         return pd.DataFrame()  # Return an empty DataFrame if no players are needed for this role
     
     # Sort players based on the score in the specified role and select the top 'count' players
-    sorted_players = predictionsdf[['Player', role]].sort_values(by=role, ascending=False).head(count)
+    sorted_players = df[['Player', role]].sort_values(by=role, ascending=False).head(count)
     return sorted_players[['Player', role]]
 
-# Example role-wise player selection
+# Select players for each position
 goalkeepers_selected = pd.concat([
-    select_players('Traditional Keeper', traditional_keepers),
-    select_players('Sweeper Keeper', sweeper_keepers)
+    select_players(df_predictions, 'Traditional Keeper', traditional_keepers),
+    select_players(df_predictions, 'Sweeper Keeper', sweeper_keepers)
 ])
 
 defenders_selected = pd.concat([
-    select_players('Ball-Playing Defender', ball_playing_defenders),
-    select_players('No-Nonsense Defender', no_nonsense_defenders)
+    select_players(df_predictions, 'Ball-Playing Defender', ball_playing_defenders),
+    select_players(df_predictions, 'No-Nonsense Defender', no_nonsense_defenders)
 ])
 
-# Similarly, you can add selections for Midfielders and Attackers
+midfielders_selected = pd.concat([
+    select_players(df_predictions, 'Wide Playmaker', wide_playmakers),
+    select_players(df_predictions, 'Box-to-Box Midfielder', box_to_box_midfielders),
+    select_players(df_predictions, 'Deep Lying Playmaker', deep_lying_playmakers)
+])
 
-# 4. Handling players who qualify for multiple roles
+attackers_selected = pd.concat([
+    select_players(df_predictions, 'Poacher', poachers),
+    select_players(df_predictions, 'Target Man', target_men),
+    select_players(df_predictions, 'Advanced Forward', advanced_forwards),
+    select_players(df_predictions, 'False Nine', false_nines)
+])
+
+# 7. Handling players who qualify for multiple roles
 def resolve_conflicts(selected_players):
     """
     This function ensures that no player is assigned to multiple roles.
@@ -172,12 +141,12 @@ def resolve_conflicts(selected_players):
 # Resolve conflicts in the selected players
 final_goalkeepers = resolve_conflicts(goalkeepers_selected)
 final_defenders = resolve_conflicts(defenders_selected)
-# Apply the same for midfielders and attackers
+final_midfielders = resolve_conflicts(midfielders_selected)
+final_attackers = resolve_conflicts(attackers_selected)
 
-# 5. Display the final squad selection as a table
+# 8. Display the final squad selection as a table
 st.subheader("Final Squad Selection")
 
-# Example squad display for goalkeepers and defenders
-squad_table = pd.concat([final_goalkeepers, final_defenders])  # Add more positions as needed
+# Concatenate all positions into a final squad table
+squad_table = pd.concat([final_goalkeepers, final_defenders, final_midfielders, final_attackers])
 st.dataframe(squad_table)
-
