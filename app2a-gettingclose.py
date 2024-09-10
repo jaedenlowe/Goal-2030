@@ -59,11 +59,17 @@ def generate_squad(prediction_results, num_players_per_position):
             # Access the correct score column based on the model name
             score_column = score_column_map.get(role, "prediction_score")
             role_predictions = role_predictions[['Player', score_column]]
+            role_predictions.rename(columns={score_column: 'Score'}, inplace=True)
             role_predictions['Role'] = role
             all_scores.append(role_predictions)
     
     # Combine all scores into a single dataframe
     all_scores_df = pd.concat(all_scores, ignore_index=True)
+
+    # Check if 'Score' column exists before sorting
+    if 'Score' not in all_scores_df.columns:
+        st.error("The 'Score' column is missing in the combined predictions.")
+        return pd.DataFrame()
 
     # Sort by score in descending order
     all_scores_df = all_scores_df.sort_values(by='Score', ascending=False)
@@ -90,6 +96,7 @@ def generate_squad(prediction_results, num_players_per_position):
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
+
 
 def display_squad(squad):
     """Displays the generated squad in a formatted table with demarcations."""
