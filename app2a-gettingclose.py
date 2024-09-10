@@ -43,7 +43,7 @@ score_column_map = {
 
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
-
+    
     # Create a DataFrame to hold scores for all roles
     all_scores_df = pd.DataFrame()
     
@@ -99,14 +99,14 @@ def generate_squad(prediction_results, num_players_per_position):
         player = player_row['Player']
         role = player_row['Role']
         
-        if player in selected_players:
+        # Check if this player is already selected or the role is filled
+        if player in selected_players or num_players_per_role.get(role, 0) <= 0:
             continue
         
-        # Check if this player can be added to the squad for their best role
-        if num_players_per_role.get(role, 0) > 0:
-            squad.append(player_row)
-            selected_players.add(player)
-            num_players_per_role[role] -= 1
+        # Add player to the squad for this role
+        squad.append(player_row)
+        selected_players.add(player)
+        num_players_per_role[role] -= 1
         
         # Stop if the squad is complete
         if all(value == 0 for value in num_players_per_role.values()):
@@ -119,6 +119,7 @@ def generate_squad(prediction_results, num_players_per_position):
     final_squad = pd.DataFrame(squad)
     
     return final_squad
+
 
 
 def display_squad(squad):
