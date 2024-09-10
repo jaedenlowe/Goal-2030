@@ -48,7 +48,6 @@ score_column_map = {
 }
 
 # Function for squad generation with limit constraints
-# Mapping of general positions to specific roles
 position_to_roles_map = {
     "Goalkeeper": ["Traditional Keeper", "Sweeper Keeper"],
     "Defender": ["Ball-Playing Defender", "No-Nonsense Defender", "Full-Back"],
@@ -79,8 +78,9 @@ def generate_squad(prediction_results, num_players_per_position, total_squad_siz
                 st.write(f"No predictions found for role: {role}")
                 continue
             
-            # Sort predictions by score
-            role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
+            # Access the correct score column based on the model name
+            score_column = score_column_map.get(role, "score")
+            role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
             
             # Select top players based on the role limit
             num_players_to_add = min(num_players, len(role_predictions))
@@ -109,14 +109,13 @@ def generate_squad(prediction_results, num_players_per_position, total_squad_siz
 
 def display_squad(squad):
     """Displays the generated squad."""
-
     st.header("Generated Squad")
     st.write(f"Total Players: {len(squad)}")
     if squad.empty:
         st.write("No players found.")
     else:
         for index, player in squad.iterrows():
-            st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
+            st.write(f"- {player['Player']}: {player['model_names']} ({player[score_column_map[player['model_names']]]:.2f})")
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
@@ -161,7 +160,7 @@ if uploaded_file is not None:
         if model_name in model_checkboxes:
             # Filter predictions for the selected model/role
             filtered_prediction = combined_predictions[combined_predictions['model_names'] == model_name]
-            filtered_prediction = filtered_prediction[filtered_prediction['prediction_score'] >= threshold]
+            filtered_prediction = filtered_prediction[filtered_prediction[score_column_map[model_name]] >= threshold]
 
             # Filter predictions based on prediction_label
             if show_recommended and not show_not_recommended:
@@ -175,7 +174,7 @@ if uploaded_file is not None:
 
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', 'Recommended', 'prediction_score']])
+            st.write(filtered_prediction[['Player', 'Recommended', score_column_map[model_name]]])
 
     # Squad generation section
     st.subheader("Squad Generation")
@@ -184,10 +183,10 @@ if uploaded_file is not None:
     total_squad_size = st.number_input("Total Squad Size", min_value=0, max_value=35, value=35)
 
     # Input for number of players per position
-    num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=3)
-    num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=8)
-    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=8)
-    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=10, value=4)
+    num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=1)
+    num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=4)
+    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=5)
+    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=3)
 
     # Input for number of each role per position
     st.write("**Goalkeeper Roles:**")
@@ -206,7 +205,7 @@ if uploaded_file is not None:
     num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
     num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=2)
 
-    # Create a dictionary to store the number of players per position
+    # Collect the user constraints
     num_players_per_position = {
         "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
         "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
@@ -214,15 +213,27 @@ if uploaded_file is not None:
         "Attacker": num_goal_poachers + num_target_men
     }
 
-    # **Add the Generate Squad button**
-    if st.button("Generate Squad"):
-        # Generate the squad using the generate_squad function
-        squad = generate_squad(combined_predictions, num_players_per_position, total_squad_size)
+    num_players_per_role = {
+        "Traditional Keeper": num_traditional_keepers,
+        "Sweeper Keeper": num_sweeper_keepers,
+        "Ball-Playing Defender": num_ball_playing_defenders,
+        "No-Nonsense Defender": num_no_nonsense_defenders,
+        "Full-Back": num_fullbacks,
+        "All-Action Midfielder": num_all_action_midfielders,
+        "Midfield Playmaker": num_midfield_playmakers,
+        "Traditional Winger": num_traditional_wingers,
+        "Inverted Winger": num_inverted_wingers,
+        "Goal Poacher": num_goal_poachers,
+        "Target Man": num_target_men
+    }
 
+    if st.button("Generate Squad"):
+        # Filter predictions based on user input
+        filtered_predictions = combined_predictions[combined_predictions['model_names'].isin(model_checkboxes)]
+        
+        # Generate the squad based on the user constraints
+        squad = generate_squad(filtered_predictions, num_players_per_role, total_squad_size)
+        
         # Display the generated squad
         display_squad(squad)
-    
-    # Debugging information
-    st.write("Debugging Info:")
-    st.write(f"Total Squad Size: {total_squad_size}")
-    st.write(f"Players per Position: {num_players_per_position}")
+
