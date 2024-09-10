@@ -57,6 +57,12 @@ def generate_squad(prediction_results, num_players_per_position):
 
         # Access the correct score column based on the model name
         score_column = score_column_map.get(role, "prediction_score")
+
+        # Check if the score column exists in the DataFrame
+        if score_column not in role_predictions.columns:
+            st.error(f"Score column '{score_column}' not found in the predictions.")
+            continue
+
         role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
         role_predictions['Role'] = role
 
@@ -98,6 +104,7 @@ def generate_squad(prediction_results, num_players_per_position):
 
 
 
+
 def display_squad(squad):
     """Displays the generated squad in a formatted table with demarcations."""
     st.header("Generated Squad")
@@ -123,8 +130,15 @@ def display_squad(squad):
         for role in roles:
             role_players = squad[squad['Role'] == role]
             
+            if role_players.empty:
+                continue
+            
             # Get the correct score column based on the role
             score_column = score_column_map.get(role, "prediction_score")
+            
+            if score_column not in squad.columns:
+                st.error(f"Score column '{score_column}' not found in the squad data.")
+                continue
             
             for _, player in role_players.iterrows():
                 squad_data.append([player['Player'], position, role, f"{player[score_column]:.2f}"])
@@ -134,6 +148,7 @@ def display_squad(squad):
     
     # Display the DataFrame
     st.write(squad_df)
+
 
 
 
