@@ -68,6 +68,10 @@ def generate_squad(prediction_results, num_players_per_position):
     # Sort by score in descending order
     all_scores_df = all_scores_df.sort_values(by='Score', ascending=False)
     
+    # Filter out keepers from outfield positions
+    keepers = prediction_results[prediction_results['position'] == 'gk']['Player']
+    outfield_df = all_scores_df[~all_scores_df['Player'].isin(keepers)]
+    
     # Initialize a dictionary to keep track of the number of players selected for each role
     role_counts = {role: 0 for role in score_column_map.keys()}
     
@@ -75,14 +79,14 @@ def generate_squad(prediction_results, num_players_per_position):
     selected_players = set()
     squad = []
 
-    for _, player in all_scores_df.iterrows():
+    for _, player in outfield_df.iterrows():
         player_name = player['Player']
         player_role = player['Role']
         
         if player_name in selected_players:
             continue
         
-        if role_counts[player_role] < num_players_per_position[player_role]:
+        if role_counts[player_role] < num_players_per_position.get(player_role, 0):
             # Assign player to the role
             squad.append(player)
             selected_players.add(player_name)
