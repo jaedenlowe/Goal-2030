@@ -242,9 +242,9 @@ if uploaded_file is not None:
         num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=2)
 
         # Squad generation section
-        if st.button("Generate Squad"):
+        
             # Create a dictionary to store the selected roles for each position
-            selected_roles = {
+        selected_roles = {
                 "Goalkeeper": [
                     "Traditional Keeper" if num_traditional_keepers > 0 else None,
                     "Sweeper Keeper" if num_sweeper_keepers > 0 else None
@@ -267,7 +267,7 @@ if uploaded_file is not None:
             }
 
             # Create a dictionary for the number of players required for each role
-            num_players_per_position = {
+        num_players_per_position = {
                 "Traditional Keeper": num_traditional_keepers,
                 "Sweeper Keeper": num_sweeper_keepers,
                 "Ball-Playing Defender": num_ball_playing_defenders,
@@ -281,6 +281,7 @@ if uploaded_file is not None:
                 "Target Man": num_target_men
             }
 
+        if st.button("Generate Squad"):
             # Generate the squad based on the updated player counts
             final_squad = generate_squad(combined_predictions, num_players_per_position)
 
