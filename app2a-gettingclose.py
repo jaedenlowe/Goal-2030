@@ -107,14 +107,18 @@ def display_squad(squad):
         for role in roles:
             role_players = squad[squad['model_names'] == role]
             
+            # Get the correct score column based on the role
+            score_column = score_column_map.get(role, "prediction_score")
+            
             for _, player in role_players.iterrows():
-                squad_data.append([player['Player'], position, role, f"{player['prediction_score']:.2f}"])
+                squad_data.append([player['Player'], position, role, f"{player[score_column]:.2f}"])
     
     # Convert the list to a DataFrame
     squad_df = pd.DataFrame(squad_data, columns=["Player Name", "Position", "Role", "Score"])
     
     # Display the DataFrame
     st.write(squad_df)
+
 
 
 
