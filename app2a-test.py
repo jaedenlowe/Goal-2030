@@ -107,9 +107,6 @@ def generate_squad(prediction_results, num_players_per_position, total_squad_siz
 
     return final_squad
 
-
-
-
 def display_squad(squad):
     """Displays the generated squad."""
 
@@ -120,7 +117,6 @@ def display_squad(squad):
     else:
         for index, player in squad.iterrows():
             st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
-
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
