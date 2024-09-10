@@ -214,7 +214,7 @@ if uploaded_file is not None:
         st.write("**Defender Roles:**")
         num_no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=5, value=2)
         num_ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=5, value=2)
-        num_full_backs = st.number_input("Full-Backs", min_value=0, max_value=10, value=4)
+        num_fullbacks = st.number_input("Fullbacks", min_value=0, max_value=10, value=4)
         
         st.write("**Midfielder Roles:**")
         num_all_action_midfielders = st.number_input("All-Action Midfielders", min_value=0, max_value=5, value=2)
@@ -226,13 +226,13 @@ if uploaded_file is not None:
         num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=5, value=2)
         num_target_men = st.number_input("Target Men", min_value=0, max_value=5, value=2)
 
-        # Generate squad based on user input
+        # Dictionary for number of players per position
         num_players_per_position = {
             "Traditional Keeper": num_traditional_keepers,
             "Sweeper Keeper": num_sweeper_keepers,
             "No-Nonsense Defender": num_no_nonsense_defenders,
             "Ball-Playing Defender": num_ball_playing_defenders,
-            "Full-Back": num_full_backs,
+            "Full-Back": num_fullbacks,
             "All-Action Midfielder": num_all_action_midfielders,
             "Midfield Playmaker": num_midfield_playmakers,
             "Traditional Winger": num_traditional_wingers,
@@ -241,6 +241,8 @@ if uploaded_file is not None:
             "Target Man": num_target_men
         }
 
-        if st.button("Generate Squad"):
-            final_squad = generate_squad(combined_predictions, num_players_per_position)
-            display_squad(final_squad)
+        # Generate the squad
+        squad = generate_squad(combined_predictions, num_players_per_position)
+        
+        # Display the squad
+        display_squad(squad)
