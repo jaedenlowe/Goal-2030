@@ -184,27 +184,27 @@ if uploaded_file is not None:
     total_squad_size = st.number_input("Total Squad Size", min_value=0, max_value=35, value=35)
 
     # Input for number of players per position
-    num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=1)
-    num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=4)
-    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=5)
-    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=3)
+    num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=3)
+    num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=8)
+    num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=8)
+    num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=4)
 
     # Input for number of each role per position
     st.write("**Goalkeeper Roles:**")
-    num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=num_goalkeepers, value=1)
-    num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=num_goalkeepers, value=0)
+    num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=num_goalkeepers, value=2)
+    num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=num_goalkeepers, value=1)
     st.write("**Defender Roles:**")
     num_ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=num_defenders, value=2)
     num_no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=num_defenders, value=2)
-    num_fullbacks = st.number_input("Full-Backs", min_value=0, max_value=num_defenders, value=0)
+    num_fullbacks = st.number_input("Full-Backs", min_value=0, max_value=num_defenders, value=4)
     st.write("**Midfielder Roles:**")
     num_all_action_midfielders = st.number_input("All-Action Midfielders", min_value=0, max_value=num_midfielders, value=2)
     num_midfield_playmakers = st.number_input("Midfield Playmakers", min_value=0, max_value=num_midfielders, value=2)
-    num_traditional_wingers = st.number_input("Traditional Wingers", min_value=0, max_value=num_midfielders, value=1)
-    num_inverted_wingers = st.number_input("Inverted Wingers", min_value=0, max_value=num_midfielders, value=0)
+    num_traditional_wingers = st.number_input("Traditional Wingers", min_value=0, max_value=num_midfielders, value=2)
+    num_inverted_wingers = st.number_input("Inverted Wingers", min_value=0, max_value=num_midfielders, value=2)
     st.write("**Attacker Roles:**")
     num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
-    num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
+    num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=2)
 
     # Create a dictionary to store the number of players per position
     num_players_per_position = {
@@ -226,4 +226,3 @@ if uploaded_file is not None:
     st.write("Debugging Info:")
     st.write(f"Total Squad Size: {total_squad_size}")
     st.write(f"Players per Position: {num_players_per_position}")
-
