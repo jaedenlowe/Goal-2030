@@ -51,6 +51,9 @@ score_column_map = {
 # Streamlit app
 st.title("Player Attribute Prediction")
 
+# Define df outside the if block
+df = None
+
 # File uploader widget
 uploaded_file = st.file_uploader("Upload a CSV file with player attributes", type="csv")
 
