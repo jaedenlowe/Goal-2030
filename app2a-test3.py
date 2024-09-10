@@ -51,8 +51,6 @@ score_column_map = {
 # Streamlit app
 st.title("Player Attribute Prediction")
 
-# Define df outside the if block
-df = None
 
 # File uploader widget
 uploaded_file = st.file_uploader("Upload a CSV file with player attributes", type="csv")
@@ -60,6 +58,7 @@ uploaded_file = st.file_uploader("Upload a CSV file with player attributes", typ
 if uploaded_file is not None:
     # Read the CSV file into a DataFrame
     df = pd.read_csv(uploaded_file)
+    predictionsdf = df
 
     # Display the dataframe
     st.write("Uploaded DataFrame:")
@@ -145,7 +144,7 @@ def select_players(role, count):
         return pd.DataFrame()  # Return an empty DataFrame if no players are needed for this role
     
     # Sort players based on the score in the specified role and select the top 'count' players
-    sorted_players = df[['Player', role]].sort_values(by=role, ascending=False).head(count)
+    sorted_players = predictionsdf[['Player', role]].sort_values(by=role, ascending=False).head(count)
     return sorted_players[['Player', role]]
 
 # Example role-wise player selection
