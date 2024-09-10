@@ -102,23 +102,41 @@ def display_squad(squad):
         st.write("No players found.")
     else:
         # Initialize a DataFrame to store the final squad with the highest score for each role
-        final_squad = pd.DataFrame()
+        final_squad = pd.DataFrame(columns=['Player', 'Role', 'Score'])
         
+        # Group by Player and find the highest scoring role
         for player_name, player_data in squad.groupby('Player'):
-            # Find the role with the highest score for this player
-            max_score_role = player_data.loc[player_data[score_column_map[player_data['model_names'].iloc[0]]].idxmax()]
-            highest_score = max_score_role[score_column_map[max_score_role['model_names']]]
+            try:
+                # Find the role with the highest score for this player
+                score_columns = [score_column_map.get(role, 'prediction_score') for role in player_data['model_names'].unique()]
+                max_score = -1
+                best_role = None
+
+                for role in player_data['model_names'].unique():
+                    score_column = score_column_map.get(role, 'prediction_score')
+                    role_scores = player_data[score_column]
+                    max_role_score = role_scores.max()
+                    
+                    if max_role_score > max_score:
+                        max_score = max_role_score
+                        best_role = role
+
+                if best_role:
+                    final_squad = final_squad.append({
+                        'Player': player_name,
+                        'Role': best_role,
+                        'Score': max_score
+                    }, ignore_index=True)
             
-            # Append to final squad
-            final_squad = final_squad.append({
-                'Player': player_name,
-                'Role': max_score_role['model_names'],
-                'Score': highest_score
-            }, ignore_index=True)
-        
+            except Exception as e:
+                st.write(f"Error processing player {player_name}: {e}")
+
         # Display the final squad
-        for index, player in final_squad.iterrows():
-            st.write(f"- {player['Player']}: {player['Role']} ({player['Score']:.2f})")
+        if not final_squad.empty:
+            for index, player in final_squad.iterrows():
+                st.write(f"- {player['Player']}: {player['Role']} ({player['Score']:.2f})")
+        else:
+            st.write("No players selected for the squad.")
 
 
 # Streamlit app
