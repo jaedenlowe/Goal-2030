@@ -83,17 +83,40 @@ def generate_squad(prediction_results, num_players_per_position):
 
 
 def display_squad(squad):
-    """Displays the generated squad."""
+    """Displays the generated squad in a formatted table with demarcations."""
     st.header("Generated Squad")
+    
     if squad.empty:
         st.write("No players found.")
-    else:
-        # Display each player with their role and score
-        for index, player in squad.iterrows():
-            role = player['model_names']
-            score_column = score_column_map.get(role, "prediction_score")
-            score = player[score_column]
-            st.write(f"- {player['Player']}: {role} ({score:.2f})")
+        return
+    
+    # Create a DataFrame for displaying
+    squad_data = []
+    position_types = {
+        "Goalkeeper": ["Traditional Keeper", "Sweeper Keeper"],
+        "Defender": ["Ball-Playing Defender", "No-Nonsense Defender", "Full-Back"],
+        "Midfielder": ["All-Action Midfielder", "Midfield Playmaker", "Traditional Winger", "Inverted Winger"],
+        "Attacker": ["Goal Poacher", "Target Man"]
+    }
+    
+    for position, roles in position_types.items():
+        # Add a demarcation for the position type
+        squad_data.append(["", "", position, ""])
+        
+        # Filter players by role
+        for role in roles:
+            role_players = squad[squad['model_names'] == role]
+            
+            for _, player in role_players.iterrows():
+                squad_data.append([player['Player'], position, role, f"{player['prediction_score']:.2f}"])
+    
+    # Convert the list to a DataFrame
+    squad_df = pd.DataFrame(squad_data, columns=["Player Name", "Position", "Role", "Score"])
+    
+    # Display the DataFrame
+    st.write(squad_df)
+
+
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
