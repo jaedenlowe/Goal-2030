@@ -44,33 +44,36 @@ score_column_map = {
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
-    # Create a DataFrame to hold scores for all roles
+    # Separate goalkeepers and outfield players
+    keepers_df = prediction_results[prediction_results['position'] == 'gk']
+    outfield_df = prediction_results[prediction_results['position'] == 'non-gk']
+    
+    # Create DataFrame to hold scores for all roles
     all_scores_df = pd.DataFrame()
     
+    # Evaluate goalkeepers for goalkeeper roles
+    for role in ["Traditional Keeper", "Sweeper Keeper"]:
+        role_predictions = keepers_df[keepers_df['model_names'] == role]
+        
+        if not role_predictions.empty:
+            score_column = score_column_map.get(role, "prediction_score")
+            role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
+            role_predictions['Role'] = role
+            all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
+    
+    # Evaluate outfield players for outfield roles
     for role in score_column_map.keys():
-        # Filter predictions for the role
-        role_predictions = prediction_results[prediction_results['model_names'] == role]
-        
-        if role_predictions.empty:
-            st.write(f"No predictions available for role: {role}")
-            continue
-        
-        # Access the correct score column based on the role
-        score_column = score_column_map.get(role, "prediction_score")
-        
-        # Add role and score column to the all_scores_df
-        role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
-        role_predictions['Role'] = role
-        
-        # Append to the all_scores_df
-        all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
+        if role not in ["Traditional Keeper", "Sweeper Keeper"]:
+            role_predictions = outfield_df[outfield_df['model_names'] == role]
+            
+            if not role_predictions.empty:
+                score_column = score_column_map.get(role, "prediction_score")
+                role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
+                role_predictions['Role'] = role
+                all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
     
     # Sort by score in descending order
     all_scores_df = all_scores_df.sort_values(by='Score', ascending=False)
-    
-    # Filter out keepers from outfield positions
-    keepers = prediction_results[prediction_results['position'] == 'gk']['Player']
-    outfield_df = all_scores_df[~all_scores_df['Player'].isin(keepers)]
     
     # Initialize a dictionary to keep track of the number of players selected for each role
     role_counts = {role: 0 for role in score_column_map.keys()}
@@ -79,7 +82,7 @@ def generate_squad(prediction_results, num_players_per_position):
     selected_players = set()
     squad = []
 
-    for _, player in outfield_df.iterrows():
+    for _, player in all_scores_df.iterrows():
         player_name = player['Player']
         player_role = player['Role']
         
