@@ -92,7 +92,13 @@ if uploaded_file is not None:
     st.write(df.head())
 
     # Make predictions for each model
-    predictions = [predict_model(model, data=df) for model in models]
+    predictions = []
+    for model, model_name in zip(models, model_names):
+        # Make prediction for the current model
+        prediction = predict_model(model, data=df)
+        # Add a new column to identify the model/role
+        prediction['model_names'] = model_name
+        predictions.append(prediction)
 
     # Combine predictions from all models
     combined_predictions = pd.concat(predictions, ignore_index=True)
@@ -110,13 +116,11 @@ if uploaded_file is not None:
     show_recommended = st.checkbox("Show Recommended")
     show_not_recommended = st.checkbox("Show Not Recommended")
 
-    for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
+    for model_name in model_names:
         if model_name in model_checkboxes:
-            # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
-
-            # Filter predictions based on the threshold
-            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
+            # Filter predictions for the selected model/role
+            filtered_prediction = combined_predictions[combined_predictions['model_names'] == model_name]
+            filtered_prediction = filtered_prediction[filtered_prediction['prediction_score'] >= threshold]
 
             # Filter predictions based on prediction_label
             if show_recommended and not show_not_recommended:
@@ -128,12 +132,9 @@ if uploaded_file is not None:
             filtered_prediction['Recommended'] = filtered_prediction['prediction_label'].apply(lambda x: "Recommended" if x == 1 else "Not Recommended")
             filtered_prediction.drop('prediction_label', axis=1, inplace=True)
 
-            # Rename the score column to the corresponding model name
-            filtered_prediction.rename(columns={score_column: model_name}, inplace=True)
-
             # Display model name and filtered prediction results
             st.header(f"{model_name}")
-            st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
+            st.write(filtered_prediction[['Player', 'Recommended', 'prediction_score']])
 
     # Squad generation section
     st.subheader("Squad Generation")
@@ -186,7 +187,7 @@ if uploaded_file is not None:
             ]
         }
 
-        # Define number of players per position
+        # Create a dictionary to store the number of players per position
         num_players_per_position = {
             "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
             "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
