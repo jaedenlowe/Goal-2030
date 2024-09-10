@@ -55,12 +55,17 @@ def generate_squad(prediction_results, num_players_per_position):
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
+        # Check if role_predictions is empty
+        if role_predictions.empty:
+            st.write(f"No predictions available for role: {role}")
+            continue
+
         # Access the correct score column based on the model name
         score_column = score_column_map.get(role, "prediction_score")
         role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
 
         # Select top players
-        top_players = role_predictions[:num_players]
+        top_players = role_predictions.head(num_players)
 
         # Add to squad
         squad.append(top_players)
@@ -69,16 +74,6 @@ def generate_squad(prediction_results, num_players_per_position):
     final_squad = pd.concat(squad, ignore_index=True)
 
     return final_squad
-
-def display_squad(squad):
-    """Displays the generated squad."""
-
-    st.header("Generated Squad")
-    if squad.empty:
-        st.write("No players found.")
-    else:
-        for index, player in squad.iterrows():
-            st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
@@ -176,25 +171,28 @@ if uploaded_file is not None:
         # Create a dictionary to store the selected roles for each position
         selected_roles = {
             "Goalkeeper": [
-                "Traditional Keeper" * num_traditional_keepers +
-                "Sweeper Keeper" * num_sweeper_keepers
+                "Traditional Keeper" if num_traditional_keepers > 0 else None,
+                "Sweeper Keeper" if num_sweeper_keepers > 0 else None
             ],
             "Defender": [
-                "Ball-Playing Defender" * num_ball_playing_defenders +
-                "No-Nonsense Defender" * num_no_nonsense_defenders +
-                "Full-Back" * num_fullbacks
+                "Ball-Playing Defender" if num_ball_playing_defenders > 0 else None,
+                "No-Nonsense Defender" if num_no_nonsense_defenders > 0 else None,
+                "Full-Back" if num_fullbacks > 0 else None
             ],
             "Midfielder": [
-                "All-Action Midfielder" * num_all_action_midfielders +
-                "Midfield Playmaker" * num_midfield_playmakers +
-                "Traditional Winger" * num_traditional_wingers +
-                "Inverted Winger" * num_inverted_wingers
+                "All-Action Midfielder" if num_all_action_midfielders > 0 else None,
+                "Midfield Playmaker" if num_midfield_playmakers > 0 else None,
+                "Traditional Winger" if num_traditional_wingers > 0 else None,
+                "Inverted Winger" if num_inverted_wingers > 0 else None
             ],
             "Attacker": [
-                "Goal Poacher" * num_goal_poachers +
-                "Target Man" * num_target_men
+                "Goal Poacher" if num_goal_poachers > 0 else None,
+                "Target Man" if num_target_men > 0 else None
             ]
         }
+
+        # Remove None values from the selected roles
+        selected_roles = {k: [v for v in vs if v is not None] for k, vs in selected_roles.items()}
 
         # Define number of players per position
         num_players_per_position = {
