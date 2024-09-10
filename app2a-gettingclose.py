@@ -96,14 +96,30 @@ def generate_squad(prediction_results, num_players_per_position):
 
 def display_squad(squad):
     """Displays the generated squad."""
+    
     st.header("Generated Squad")
     if squad.empty:
         st.write("No players found.")
     else:
-        for index, player in squad.iterrows():
+        # Initialize a DataFrame to store the final squad with the highest score for each role
+        final_squad = pd.DataFrame()
+        
+        for player_name, player_data in squad.groupby('Player'):
             # Find the role with the highest score for this player
-            role = player[score_column_map[player['model_names']]].idxmax()
-            st.write(f"- {player['Player']}: {player['model_names']} ({player[role]:.2f})")
+            max_score_role = player_data.loc[player_data[score_column_map[player_data['model_names'].iloc[0]]].idxmax()]
+            highest_score = max_score_role[score_column_map[max_score_role['model_names']]]
+            
+            # Append to final squad
+            final_squad = final_squad.append({
+                'Player': player_name,
+                'Role': max_score_role['model_names'],
+                'Score': highest_score
+            }, ignore_index=True)
+        
+        # Display the final squad
+        for index, player in final_squad.iterrows():
+            st.write(f"- {player['Player']}: {player['Role']} ({player['Score']:.2f})")
+
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
