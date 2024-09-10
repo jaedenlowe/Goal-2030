@@ -54,28 +54,25 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles)
     """Generates a squad based on prediction results, number of players per position, and selected roles."""
 
     squad = []
-    for position, num_players in num_players_per_position.items():
-        # Filter predictions based on selected roles
-        position_predictions = [result for result in prediction_results if result['model_names'] in selected_roles[position]]
+    for role, num_players in num_players_per_position.items():
+        # Filter predictions for the role
+        role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Sort predictions by prediction_score in descending order
-        position_predictions = sorted(position_predictions, key=lambda x: x['prediction_score'], reverse=True)
+        # Sort predictions by score
+        role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
 
-        # Select the top N players based on the number of players for this position
-        top_players = position_predictions[:num_players]
+        # Select top players
+        top_players = role_predictions[:num_players]
 
-        # Add recommended tag
-        top_players['Recommended'] = 'Recommended'
-
-        # Append the top players to the squad
+        # Add to squad
         squad.append(top_players)
 
-    # Concatenate all roles into one DataFrame
+    # Combine all roles
     final_squad = pd.concat(squad, ignore_index=True)
 
     return final_squad
 
-print(prediction_results[:2])
+
 
 def display_squad(squad):
   """Displays the generated squad."""
