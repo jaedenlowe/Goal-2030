@@ -43,7 +43,7 @@ score_column_map = {
 
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
-    
+
     # Create a DataFrame to hold scores for all roles
     all_scores_df = pd.DataFrame()
     
@@ -78,7 +78,7 @@ def generate_squad(prediction_results, num_players_per_position):
     # Initialize a list to store the selected players and their roles
     selected_players = set()
     squad = []
-
+    
     # Create a dictionary for the number of players required for each role
     num_players_per_role = {
         "Traditional Keeper": num_traditional_keepers,
@@ -93,8 +93,8 @@ def generate_squad(prediction_results, num_players_per_position):
         "Goal Poacher": num_goal_poachers,
         "Target Man": num_target_men
     }
-
-    # Iterate over the roles based on the sorted DataFrame
+    
+    # Iterate over the sorted list and assign players to their best role
     for _, player_row in all_scores_df.iterrows():
         player = player_row['Player']
         role = player_row['Role']
