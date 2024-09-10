@@ -138,7 +138,10 @@ def display_squad(squad):
         # Display the final squad
         if not final_squad.empty:
             for index, player in final_squad.iterrows():
-                st.write(f"- {player['Player']}: {player['Role']}
+                st.write(f"- {player['Player']}: {player['Role']} ({player['Score']:.2f})")
+        else:
+            st.write("No players selected for the squad.")
+
 
 
 
