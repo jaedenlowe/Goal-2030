@@ -208,9 +208,6 @@ if uploaded_file is not None:
 
         # Input for number of each role per position
         st.write("**Goalkeeper Roles:**")
-        num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0
-        # Input for number of each role per position
-        st.write("**Goalkeeper Roles:**")
         num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=5, value=2)
         num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=5, value=1)
         
