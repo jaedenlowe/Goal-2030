@@ -58,9 +58,10 @@ position_to_roles_map = {
 
 def generate_squad(prediction_results, num_players_per_position, total_squad_size):
     """Generates a squad based on prediction results, number of players per position, and selected roles with limits."""
-    
+
     squad = []
     total_players_selected = 0
+    selected_players = set()  # To track selected players and avoid duplicates
 
     for position, num_players in num_players_per_position.items():
         # Check if total squad size is reached
@@ -86,23 +87,27 @@ def generate_squad(prediction_results, num_players_per_position, total_squad_siz
             num_players_to_add = min(num_players, len(role_predictions))
             top_players = role_predictions[:num_players_to_add]
 
-            # Track the number of players being added
-            total_players_selected += num_players_to_add
-
-            # Add the players to the squad
-            squad.append(top_players)
+            # Ensure selected players are not duplicates and within the squad size limit
+            for _, player in top_players.iterrows():
+                if total_players_selected >= total_squad_size:
+                    break
+                if player['Player'] not in selected_players:
+                    selected_players.add(player['Player'])
+                    squad.append(player)
+                    total_players_selected += 1
 
             # If the squad size exceeds the limit, truncate the last batch of players
             if total_players_selected >= total_squad_size:
                 break
 
-    # Combine all roles
+    # Convert the squad list to a DataFrame
     if squad:
-        final_squad = pd.concat(squad, ignore_index=True)
+        final_squad = pd.DataFrame(squad)
     else:
         final_squad = pd.DataFrame()  # Return empty DataFrame if no players
 
     return final_squad
+
 
 
 def display_squad(squad):
