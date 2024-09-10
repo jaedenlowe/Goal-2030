@@ -41,94 +41,42 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
-def generate_squad(prediction_results, num_players_per_position):
-    # Initialize a set to store the selected players and their roles
-    selected_players = set()
-    squad = []
+def generate_squad_with_fallback(prediction_results, num_players_per_position):
+    # Initialize a list to store selected players and track assignments
+    selected_players = []
+    selected_player_roles = set()
 
-    # Create a temporary DataFrame to store each player's score for all roles
-    all_scores = pd.DataFrame()
+    # Initialize counts for missing players
+    missing_players_by_role = []
 
-    for role in score_column_map.keys():
-        role_predictions = prediction_results[prediction_results['model_names'] == role]
+    # Iterate over each role and select players
+    for role, count_needed in num_players_per_position.items():
+        role_players = prediction_results[prediction_results['Role'] == role]
+        role_players = role_players.sort_values(by='Score', ascending=False)
 
-        # Access the correct score column based on the role
-        score_column = score_column_map.get(role, "prediction_score")
-        role_predictions = role_predictions[['Player', score_column]]
-        role_predictions.rename(columns={score_column: role}, inplace=True)
+        selected_for_role = 0
+        for _, row in role_players.iterrows():
+            if row['Player'] not in selected_player_roles:
+                selected_players.append((row['Player'], row['Position'], role, row['Score']))
+                selected_player_roles.add(row['Player'])
+                selected_for_role += 1
+                if selected_for_role == count_needed:
+                    break
 
-        # Merge the role predictions into the all_scores DataFrame
-        if all_scores.empty:
-            all_scores = role_predictions
-        else:
-            all_scores = pd.merge(all_scores, role_predictions, on='Player', how='outer')
+        # Handle cases where fewer players are available for a role
+        if selected_for_role < count_needed:
+            missing_players_by_role.append((role, count_needed - selected_for_role))
 
-    # Convert 'Player' column from categorical to string type (if applicable)
-    if pd.api.types.is_categorical_dtype(all_scores['Player']):
-        all_scores['Player'] = all_scores['Player'].astype(str)
+    # Notify if there are missing players for any role
+    if missing_players_by_role:
+        for role, missing_count in missing_players_by_role:
+            st.warning(f"Not enough players available for role: {role}. Needed {missing_count}, found {count_needed - missing_count}.")
+        st.warning(f"Squad selection does not meet the required number of players. Selected {len(selected_players)}, needed {sum(num_players_per_position.values())}.")
+    else:
+        st.success(f"Squad selection completed successfully with {len(selected_players)} players.")
 
-    # Fill NaN values with 0 (for players who don't have scores for certain roles)
-    all_scores.fillna(0, inplace=True)
+    return selected_players
 
-    # Add a column to track the best score and the role associated with it
-    all_scores['Best Score'] = all_scores.drop('Player', axis=1).max(axis=1)
-    all_scores['Best Role'] = all_scores.drop(['Player', 'Best Score'], axis=1).idxmax(axis=1)
-
-    # Sort players by their best score, ensuring the highest-scoring players are considered first
-    sorted_scores = all_scores.sort_values(by='Best Score', ascending=False)
-
-    # Initialize a total count of players
-    total_selected_players = 0
-
-    # Allocate players based on their highest score for each role
-    for role, num_players in num_players_per_position.items():
-        print(f"\nSelecting {num_players} players for role: {role}")
-
-        # Filter players for the current role
-        role_players = sorted_scores[
-            (sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))
-        ]
-
-        # If not enough players are found for the role, try using fallback players
-        if len(role_players) < num_players:
-            st.write(f"Warning: Not enough players available for role: {role}. Needed {num_players}, found {len(role_players)}.")
-            
-            # Find additional players who have lower scores in this role but can fill it
-            fallback_players = sorted_scores[
-                (~sorted_scores['Player'].isin(selected_players)) & (sorted_scores[role] > 0)
-            ].sort_values(by=role, ascending=False)
-
-            # Calculate how many more players we need to fill the role
-            remaining_players_needed = num_players - len(role_players)
-
-            # Add fallback players to the role_players DataFrame
-            role_players = pd.concat([role_players, fallback_players.head(remaining_players_needed)])
-
-        # Select the top players for the current role, up to the specified number
-        top_players = role_players.head(num_players)
-
-        # Add the selected players to the set of selected players
-        selected_players.update(top_players['Player'])
-
-        # Append the top players for this role to the squad list
-        squad.append(top_players[['Player', 'Best Role', 'Best Score']])
-
-        # Track the total number of players selected
-        total_selected_players += len(top_players)
-
-        # Output the number of players selected for this role for debugging
-        print(f"Selected {len(top_players)} players for role {role}. Total so far: {total_selected_players}")
-
-    # Concatenate all selected players into a final DataFrame
-    final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
-
-    # Check if the total number of selected players matches the user's input
-    total_players_needed = sum(num_players_per_position.values())
-    if total_selected_players != total_players_needed:
-        st.write(f"Warning: Squad selection does not meet the required number of players. Selected {total_selected_players}, needed {total_players_needed}.")
-
-    # Return the final squad DataFrame
-    return final_squad
 
 
 
@@ -313,7 +261,7 @@ if uploaded_file is not None:
             }
 
             # Generate the squad based on the updated player counts
-            final_squad = generate_squad(combined_predictions, num_players_per_position)
+            final_squad = generate_squad_with_fallback(combined_predictions, num_players_per_position)
 
             # Display the generated squad
             display_squad(final_squad)
