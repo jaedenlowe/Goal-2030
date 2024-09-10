@@ -44,43 +44,61 @@ score_column_map = {
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
-    # Initialize a list to store the selected players and their roles
-    selected_players = set()
-    squad = []
-
-    for role, num_players in num_players_per_position.items():
+    # Create a DataFrame to hold scores for all roles
+    all_scores_df = pd.DataFrame()
+    
+    for role in score_column_map.keys():
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
-
-        # Check if role_predictions is empty
+        
         if role_predictions.empty:
             st.write(f"No predictions available for role: {role}")
             continue
-
-        # Access the correct score column based on the model name
+        
+        # Access the correct score column based on the role
         score_column = score_column_map.get(role, "prediction_score")
-        role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
-
+        
+        # Add role and score column to the all_scores_df
+        role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
+        role_predictions['Role'] = role
+        
+        # Append to the all_scores_df
+        all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
+    
+    # Initialize a list to store the selected players and their roles
+    selected_players = set()
+    squad = []
+    
+    for role, num_players in num_players_per_position.items():
+        # Filter the DataFrame for the current role
+        role_df = all_scores_df[all_scores_df['Role'] == role]
+        
+        # Sort by score
+        role_df = role_df.sort_values(by='Score', ascending=False)
+        
         # Filter out already selected players
-        role_predictions = role_predictions[~role_predictions['Player'].isin(selected_players)]
-
+        role_df = role_df[~role_df['Player'].isin(selected_players)]
+        
         # Select top players for this role
-        top_players = role_predictions.head(num_players)
-
+        top_players = role_df.head(num_players)
+        
+        # Check if enough players are available for the role
+        if len(top_players) < num_players:
+            st.write(f"Warning: Not enough players available for role: {role}. Needed {num_players}, found {len(top_players)}.")
+        
         # Add selected players to the set
         selected_players.update(top_players['Player'])
-
+        
         # Add to squad
         squad.append(top_players)
-
+    
     if not squad:
         st.write("No players selected for the squad.")
-
+    
     # Combine all roles
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
-
 
 def display_squad(squad):
     """Displays the generated squad in a formatted table with demarcations."""
@@ -105,22 +123,19 @@ def display_squad(squad):
         
         # Filter players by role
         for role in roles:
-            role_players = squad[squad['model_names'] == role]
+            role_players = squad[squad['Role'] == role]
             
             # Get the correct score column based on the role
             score_column = score_column_map.get(role, "prediction_score")
             
             for _, player in role_players.iterrows():
-                squad_data.append([player['Player'], position, role, f"{player[score_column]:.2f}"])
+                squad_data.append([player['Player'], position, role, f"{player['Score']:.2f}"])
     
     # Convert the list to a DataFrame
     squad_df = pd.DataFrame(squad_data, columns=["Player Name", "Position", "Role", "Score"])
     
     # Display the DataFrame
     st.write(squad_df)
-
-
-
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
@@ -192,6 +207,7 @@ if uploaded_file is not None:
                 st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
 
         # Squad generation section
+        # Squad generation section
         st.subheader("Squad Generation")
 
         # Input for number of players per position
@@ -217,7 +233,7 @@ if uploaded_file is not None:
         num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
         num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
 
-        # Squad generation section
+        # Generate the squad
         if st.button("Generate Squad"):
             # Create a dictionary to store the selected roles for each position
             selected_roles = {
