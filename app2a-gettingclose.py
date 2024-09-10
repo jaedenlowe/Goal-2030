@@ -43,43 +43,35 @@ score_column_map = {
 
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
-    
-    # Initialize a list to store the selected players and their roles
-    selected_players = set()
+
     squad = []
+    chosen_players = set()  # Track players already chosen
 
     for role, num_players in num_players_per_position.items():
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Check if role_predictions is empty
-        if role_predictions.empty:
-            st.write(f"No predictions available for role: {role}")
-            continue
-
         # Access the correct score column based on the model name
         score_column = score_column_map.get(role, "prediction_score")
         role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
 
-        # Filter out already selected players
-        role_predictions = role_predictions[~role_predictions['Player'].isin(selected_players)]
+        # Exclude already chosen players
+        role_predictions = role_predictions[~role_predictions['Player'].isin(chosen_players)]
 
-        # Select top players for this role
+        # Select top players for the role
         top_players = role_predictions.head(num_players)
-
-        # Add selected players to the set
-        selected_players.update(top_players['Player'])
 
         # Add to squad
         squad.append(top_players)
 
-    if not squad:
-        st.write("No players selected for the squad.")
+        # Update the set of chosen players
+        chosen_players.update(top_players['Player'])
 
     # Combine all roles
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
+
 
 
 def display_squad(squad):
