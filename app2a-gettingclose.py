@@ -52,9 +52,6 @@ def generate_squad(prediction_results, num_players_per_position):
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Debug print
-        st.write(f"Role: {role}, Predictions Count: {len(role_predictions)}")
-
         # Check if role_predictions is empty
         if role_predictions.empty:
             st.write(f"No predictions available for role: {role}")
