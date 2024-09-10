@@ -271,8 +271,8 @@ if uploaded_file is not None:
                     "Target Man": num_target_men
                 }
 
-                # Generate the squad
-                squad = generate_squad(combined_predictions, num_players_per_role)
-
-                # Display the generated squad
-                display_squad(squad)
+        # Button to generate squad
+        if st.button("Generate Squad"):
+            # Assuming generate_squad() and display_squad() are defined elsewhere
+            squad = generate_squad(combined_predictions, num_players_per_role)
+            display_squad(squad)
