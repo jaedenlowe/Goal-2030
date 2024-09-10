@@ -45,12 +45,11 @@ def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
     squad = []
-    for role, num_players in num_players_per_position.items():
+    role_scores = {}
+    
+    for role in score_column_map.keys():
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
-
-        # Debug print
-        st.write(f"Role: {role}, Predictions Count: {len(role_predictions)}")
 
         # Check if role_predictions is empty
         if role_predictions.empty:
@@ -60,19 +59,27 @@ def generate_squad(prediction_results, num_players_per_position):
         # Access the correct score column based on the model name
         score_column = score_column_map.get(role, "prediction_score")
         role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
-
-        # Select top players
-        top_players = role_predictions.head(num_players)
-
+        
+        # For each player, record their highest score across all roles
+        for _, player in role_predictions.iterrows():
+            player_name = player['Player']
+            player_score = player[score_column]
+            if player_name not in role_scores or role_scores[player_name]['score'] < player_score:
+                role_scores[player_name] = {'role': role, 'score': player_score}
+    
+    # Filter and select top players for each role
+    for role, num_players in num_players_per_position.items():
+        # Filter players for the specific role
+        filtered_players = [name for name, details in role_scores.items() if details['role'] == role]
+        role_df = prediction_results[prediction_results['Player'].isin(filtered_players)]
+        role_df = role_df.sort_values(by=score_column_map[role], ascending=False).head(num_players)
+        
         # Add to squad
-        squad.append(top_players)
-
-    if not squad:
-        st.write("No players selected for the squad.")
-
+        squad.append(role_df)
+    
     # Combine all roles
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
-
+    
     return final_squad
 
 def display_squad(squad):
@@ -224,3 +231,4 @@ if uploaded_file is not None:
 
 else:
     st.write("Please upload a CSV file to begin.")
+
