@@ -42,7 +42,7 @@ score_column_map = {
 }
 
 def generate_squad(prediction_results, num_players_per_position):
-    # Initialize a list to store the selected players and their roles
+    # Initialize a set to store the selected players and their roles
     selected_players = set()
     squad = []
 
@@ -77,43 +77,48 @@ def generate_squad(prediction_results, num_players_per_position):
     # Sort players by their best score, ensuring the highest-scoring players are considered first
     sorted_scores = all_scores.sort_values(by='Best Score', ascending=False)
 
-    # Step 1: Start by initializing a total count of players
+    # Initialize a total count of players
     total_selected_players = 0
 
     # Allocate players based on their highest score for each role
     for role, num_players in num_players_per_position.items():
         print(f"\nSelecting {num_players} players for role: {role}")
 
-        # Step 2: Filter players for the current role
+        # Filter players for the current role
         role_players = sorted_scores[
             (sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))
         ]
 
-        # Step 3: Select the top players for the current role, up to the specified number
+        # Check if there are enough players for this role
+        if len(role_players) < num_players:
+            st.write(f"Warning: Not enough players available for role: {role}. Needed {num_players}, found {len(role_players)}.")
+
+        # Select the top players for the current role, up to the specified number
         top_players = role_players.head(num_players)
 
         # Add the selected players to the set of selected players
         selected_players.update(top_players['Player'])
 
-        # Step 4: Append the top players for this role to the squad list
+        # Append the top players for this role to the squad list
         squad.append(top_players[['Player', 'Best Role', 'Best Score']])
 
         # Track the total number of players selected
         total_selected_players += len(top_players)
 
-        # Step 5: Output the number of players selected for this role for debugging
+        # Output the number of players selected for this role for debugging
         print(f"Selected {len(top_players)} players for role {role}. Total so far: {total_selected_players}")
 
     # Concatenate all selected players into a final DataFrame
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
-    # Step 6: Check if the total number of selected players matches the user's input
+    # Check if the total number of selected players matches the user's input
     total_players_needed = sum(num_players_per_position.values())
     if total_selected_players != total_players_needed:
         st.write(f"Warning: Squad selection does not meet the required number of players. Selected {total_selected_players}, needed {total_players_needed}.")
 
     # Return the final squad DataFrame
     return final_squad
+
 
 
 
