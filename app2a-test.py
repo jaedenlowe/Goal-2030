@@ -47,23 +47,37 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
-# Additional functions for squad generation
-def generate_squad(prediction_results, num_players_per_position, selected_roles):
-    """Generates a squad based on prediction results, number of players per position, and selected roles."""
-
+# Function for squad generation with limit constraints
+def generate_squad(prediction_results, num_players_per_position, selected_roles, total_squad_size):
+    """Generates a squad based on prediction results, number of players per position, and selected roles with limits."""
+    
     squad = []
+    total_players_selected = 0
+
     for role, num_players in num_players_per_position.items():
+        # Check if total squad size is reached
+        if total_players_selected >= total_squad_size:
+            break
+
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
         # Sort predictions by score
         role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
 
-        # Select top players
-        top_players = role_predictions[:num_players]
+        # Select top players based on the limit
+        num_players_to_add = min(num_players, len(role_predictions))
+        top_players = role_predictions[:num_players_to_add]
 
-        # Add to squad
+        # Track the number of players being added
+        total_players_selected += num_players_to_add
+
+        # Add the players to the squad
         squad.append(top_players)
+
+        # If the squad size exceeds the limit, truncate the last batch of players
+        if total_players_selected >= total_squad_size:
+            break
 
     # Combine all roles
     final_squad = pd.concat(squad, ignore_index=True)
@@ -74,8 +88,10 @@ def display_squad(squad):
     """Displays the generated squad."""
 
     st.header("Generated Squad")
+    st.write(f"Total Players: {len(squad)}")
     for index, player in squad.iterrows():
         st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
+
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
@@ -139,6 +155,9 @@ if uploaded_file is not None:
     # Squad generation section
     st.subheader("Squad Generation")
 
+    # Input for total squad size limit (e.g. 35 players)
+    total_squad_size = st.number_input("Total Squad Size", min_value=0, max_value=35, value=35)
+
     # Input for number of players per position
     num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=1)
     num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=4)
@@ -162,41 +181,16 @@ if uploaded_file is not None:
     num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
     num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
 
-    # Squad generation section
-    if st.button("Generate Squad"):
-        # Create a dictionary to store the selected roles for each position
-        selected_roles = {
-            "Goalkeeper": [
-                "Traditional Keeper" * num_traditional_keepers +
-                "Sweeper Keeper" * num_sweeper_keepers
-            ],
-            "Defender": [
-                "Ball-Playing Defender" * num_ball_playing_defenders +
-                "No-Nonsense Defender" * num_no_nonsense_defenders +
-                "Full-Back" * num_fullbacks
-            ],
-            "Midfielder": [
-                "All-Action Midfielder" * num_all_action_midfielders +
-                "Midfield Playmaker" * num_midfield_playmakers +
-                "Traditional Winger" * num_traditional_wingers +
-                "Inverted Winger" * num_inverted_wingers
-            ],
-            "Attacker": [
-                "Goal Poacher" * num_goal_poachers +
-                "Target Man" * num_target_men
-            ]
-        }
+    # Create a dictionary to store the number of players per position
+    num_players_per_position = {
+        "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
+        "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
+        "Midfielder": num_all_action_midfielders + num_midfield_playmakers + num_traditional_wingers + num_inverted_wingers,
+        "Attacker": num_goal_poachers + num_target_men
+    }
 
-        # Create a dictionary to store the number of players per position
-        num_players_per_position = {
-            "Goalkeeper": num_traditional_keepers + num_sweeper_keepers,
-            "Defender": num_ball_playing_defenders + num_no_nonsense_defenders + num_fullbacks,
-            "Midfielder": num_all_action_midfielders + num_midfield_playmakers + num_traditional_wingers + num_inverted_wingers,
-            "Attacker": num_goal_poachers + num_target_men
-        }
+    # Generate the squad using the generate_squad function
+    squad = generate_squad(combined_predictions, num_players_per_position, model_checkboxes, total_squad_size)
 
-        # Generate the squad using the generate_squad function
-        squad = generate_squad(combined_predictions, num_players_per_position, selected_roles)
-
-        # Display the generated squad
-        display_squad(squad)
+    # Display the generated squad
+    display_squad(squad)
