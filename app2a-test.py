@@ -48,41 +48,53 @@ score_column_map = {
 }
 
 # Function for squad generation with limit constraints
-def generate_squad(prediction_results, num_players_per_position, selected_roles, total_squad_size):
+# Mapping of general positions to specific roles
+position_to_roles_map = {
+    "Goalkeeper": ["Traditional Keeper", "Sweeper Keeper"],
+    "Defender": ["Ball-Playing Defender", "No-Nonsense Defender", "Full-Back"],
+    "Midfielder": ["All-Action Midfielder", "Midfield Playmaker", "Traditional Winger", "Inverted Winger"],
+    "Attacker": ["Goal Poacher", "Target Man"]
+}
+
+def generate_squad(prediction_results, num_players_per_position, total_squad_size):
     """Generates a squad based on prediction results, number of players per position, and selected roles with limits."""
     
     squad = []
     total_players_selected = 0
 
-    for role, num_players in num_players_per_position.items():
+    for position, num_players in num_players_per_position.items():
         # Check if total squad size is reached
         if total_players_selected >= total_squad_size:
             break
 
-        # Filter predictions for the role
-        role_predictions = prediction_results[prediction_results['model_names'] == role]
+        # Get roles corresponding to the position (Goalkeeper, Defender, etc.)
+        position_roles = position_to_roles_map[position]
 
-        # Check if role_predictions is empty
-        if role_predictions.empty:
-            st.write(f"No predictions found for role: {role}")
-            continue
+        for role in position_roles:
+            # Filter predictions for the role
+            role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Sort predictions by score
-        role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
+            # Check if role_predictions is empty
+            if role_predictions.empty:
+                st.write(f"No predictions found for role: {role}")
+                continue
 
-        # Select top players based on the limit
-        num_players_to_add = min(num_players, len(role_predictions))
-        top_players = role_predictions[:num_players_to_add]
+            # Sort predictions by score
+            role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
 
-        # Track the number of players being added
-        total_players_selected += num_players_to_add
+            # Select top players based on the limit
+            num_players_to_add = min(num_players, len(role_predictions))
+            top_players = role_predictions[:num_players_to_add]
 
-        # Add the players to the squad
-        squad.append(top_players)
+            # Track the number of players being added
+            total_players_selected += num_players_to_add
 
-        # If the squad size exceeds the limit, truncate the last batch of players
-        if total_players_selected >= total_squad_size:
-            break
+            # Add the players to the squad
+            squad.append(top_players)
+
+            # If the squad size exceeds the limit, truncate the last batch of players
+            if total_players_selected >= total_squad_size:
+                break
 
     # Combine all roles
     if squad:
@@ -91,6 +103,7 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles,
         final_squad = pd.DataFrame()  # Return empty DataFrame if no players
 
     return final_squad
+
 
 def display_squad(squad):
     """Displays the generated squad."""
@@ -203,7 +216,7 @@ if uploaded_file is not None:
     # **Add the Generate Squad button**
     if st.button("Generate Squad"):
         # Generate the squad using the generate_squad function
-        squad = generate_squad(combined_predictions, num_players_per_position, model_checkboxes, total_squad_size)
+        squad = generate_squad(combined_predictions, num_players_per_position, total_squad_size)
 
         # Display the generated squad
         display_squad(squad)
