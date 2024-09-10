@@ -58,36 +58,35 @@ position_to_roles_map = {
 
 def generate_squad(prediction_results, num_players_per_position, total_squad_size):
     """Generates a squad based on prediction results, number of players per position, and selected roles with limits."""
-
+    
     squad = []
     total_players_selected = 0
     selected_players = set()  # To track selected players and avoid duplicates
 
     for position, num_players in num_players_per_position.items():
-        # Check if total squad size is reached
         if total_players_selected >= total_squad_size:
             break
-
+        
         # Get roles corresponding to the position (Goalkeeper, Defender, etc.)
         position_roles = position_to_roles_map[position]
-
+        
         for role in position_roles:
             # Filter predictions for the role
             role_predictions = prediction_results[prediction_results['model_names'] == role]
-
+            
             # Check if role_predictions is empty
             if role_predictions.empty:
                 st.write(f"No predictions found for role: {role}")
                 continue
-
+            
             # Sort predictions by score
             role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
-
-            # Select top players based on the limit
+            
+            # Select top players based on the role limit
             num_players_to_add = min(num_players, len(role_predictions))
             top_players = role_predictions[:num_players_to_add]
-
-            # Ensure selected players are not duplicates and within the squad size limit
+            
+            # Add players to squad if not already selected and within total squad size limit
             for _, player in top_players.iterrows():
                 if total_players_selected >= total_squad_size:
                     break
@@ -107,6 +106,7 @@ def generate_squad(prediction_results, num_players_per_position, total_squad_siz
         final_squad = pd.DataFrame()  # Return empty DataFrame if no players
 
     return final_squad
+
 
 
 
