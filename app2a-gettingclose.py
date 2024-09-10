@@ -44,47 +44,28 @@ score_column_map = {
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
-    # Initialize a DataFrame to store players and their highest scores
-    player_scores = pd.DataFrame()
-
-    for role, score_column in score_column_map.items():
-        # Filter predictions for the role
-        role_predictions = prediction_results[prediction_results['model_names'] == role]
-
-        # Check if role_predictions is empty
-        if role_predictions.empty:
-            continue
-
-        # Check if the score column exists in the DataFrame
-        if score_column not in role_predictions.columns:
-            st.error(f"Score column '{score_column}' not found in the predictions.")
-            continue
-
-        # Select relevant columns and rename the score column to 'Score'
-        role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: 'Score'})
-        role_predictions['Role'] = role
-
-        # Combine with the player_scores DataFrame
-        if player_scores.empty:
-            player_scores = role_predictions
-        else:
-            player_scores = pd.concat([player_scores, role_predictions], ignore_index=True)
-
-    # Find the highest score for each player
-    player_scores = player_scores.groupby('Player').agg({'Score': 'max', 'Role': 'first'}).reset_index()
-    player_scores = player_scores.sort_values(by='Score', ascending=False)
-
     # Initialize a list to store the selected players and their roles
     selected_players = set()
     squad = []
 
     for role, num_players in num_players_per_position.items():
-        # Filter players who have the role and have not been selected yet
-        role_players = player_scores[player_scores['Role'] == role]
-        role_players = role_players[~role_players['Player'].isin(selected_players)]
+        # Filter predictions for the role
+        role_predictions = prediction_results[prediction_results['model_names'] == role]
+
+        # Check if role_predictions is empty
+        if role_predictions.empty:
+            st.write(f"No predictions available for role: {role}")
+            continue
+
+        # Access the correct score column based on the model name
+        score_column = score_column_map.get(role, "prediction_score")
+        role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
+
+        # Filter out already selected players
+        role_predictions = role_predictions[~role_predictions['Player'].isin(selected_players)]
 
         # Select top players for this role
-        top_players = role_players.head(num_players)
+        top_players = role_predictions.head(num_players)
 
         # Add selected players to the set
         selected_players.update(top_players['Player'])
@@ -99,10 +80,6 @@ def generate_squad(prediction_results, num_players_per_position):
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
-
-
-
-
 
 
 def display_squad(squad):
@@ -128,28 +105,19 @@ def display_squad(squad):
         
         # Filter players by role
         for role in roles:
-            role_players = squad[squad['Role'] == role]
+            role_players = squad[squad['model_names'] == role]
             
-            if role_players.empty:
-                continue
-            
-            # Use 'Score' column for displaying
-            if 'Score' not in squad.columns:
-                st.error("Score column not found in the squad data.")
-                continue
+            # Get the correct score column based on the role
+            score_column = score_column_map.get(role, "prediction_score")
             
             for _, player in role_players.iterrows():
-                squad_data.append([player['Player'], position, role, f"{player['Score']:.2f}"])
+                squad_data.append([player['Player'], position, role, f"{player[score_column]:.2f}"])
     
     # Convert the list to a DataFrame
     squad_df = pd.DataFrame(squad_data, columns=["Player Name", "Position", "Role", "Score"])
     
     # Display the DataFrame
     st.write(squad_df)
-
-
-
-
 
 
 
