@@ -44,13 +44,14 @@ score_column_map = {
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
-    # Dictionary to store the highest scores and assigned roles for each player
-    player_role_scores = {}
-    
-    for role in score_column_map.keys():
+    # Initialize a list to store the selected players and their roles
+    selected_players = set()
+    squad = []
+
+    for role, num_players in num_players_per_position.items():
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
-        
+
         # Check if role_predictions is empty
         if role_predictions.empty:
             st.write(f"No predictions available for role: {role}")
@@ -60,40 +61,25 @@ def generate_squad(prediction_results, num_players_per_position):
         score_column = score_column_map.get(role, "prediction_score")
         role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
 
-        # Update the player_role_scores with the highest score for each player
-        for _, row in role_predictions.iterrows():
-            player = row['Player']
-            score = row[score_column]
-            if player not in player_role_scores or score > player_role_scores[player]['score']:
-                player_role_scores[player] = {'role': role, 'score': score}
-    
-    # Sort players by their overall highest score
-    sorted_players = sorted(player_role_scores.items(), key=lambda x: x[1]['score'], reverse=True)
-    
-    # Initialize the final squad and keep track of selected players
-    final_squad = []
-    selected_players = set()
-    
-    for role, num_players in num_players_per_position.items():
-        count = 0
-        for player, info in sorted_players:
-            if player in selected_players:
-                continue
-            
-            if info['role'] == role:
-                final_squad.append({'Player': player, 'Position': 'Goalkeeper' if 'Keeper' in role else 'Defender' if 'Defender' in role else 'Midfielder' if 'Midfielder' in role else 'Attacker', 'Role': role, 'Score': info['score']})
-                selected_players.add(player)
-                count += 1
-            
-            if count >= num_players:
-                break
-    
-    if not final_squad:
+        # Filter out already selected players
+        role_predictions = role_predictions[~role_predictions['Player'].isin(selected_players)]
+
+        # Select top players for this role
+        top_players = role_predictions.head(num_players)
+
+        # Add selected players to the set
+        selected_players.update(top_players['Player'])
+
+        # Add to squad
+        squad.append(top_players)
+
+    if not squad:
         st.write("No players selected for the squad.")
-    
-    final_squad_df = pd.DataFrame(final_squad)
-    
-    return final_squad_df
+
+    # Combine all roles
+    final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
+
+    return final_squad
 
 
 def display_squad(squad):
