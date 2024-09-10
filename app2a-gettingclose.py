@@ -44,56 +44,58 @@ score_column_map = {
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
-    # Initialize a DataFrame to store all player scores for all roles
-    all_scores_df = pd.DataFrame()
-
-    for role, score_column in score_column_map.items():
-        # Filter predictions for the role
-        role_predictions = prediction_results[prediction_results['model_names'] == role]
-
-        # Check if the score column exists in the DataFrame
-        if score_column not in role_predictions.columns:
-            st.error(f"Score column '{score_column}' not found in the predictions.")
-            continue
-
-        # Select relevant columns and rename the score column to 'Score'
-        role_predictions = role_predictions[['Player', score_column]].rename(columns={score_column: role})
-        role_predictions['Role'] = role
-
-        # Combine with the all_scores_df
-        if all_scores_df.empty:
-            all_scores_df = role_predictions
-        else:
-            all_scores_df = pd.merge(all_scores_df, role_predictions[['Player', role]], on='Player', how='outer')
-
-    # Now we have a DataFrame with all roles and their corresponding scores for each player
-    # Add an additional column for the player's highest score and corresponding role
-    all_scores_df['Best Score'] = all_scores_df[score_column_map.keys()].max(axis=1)
-    all_scores_df['Best Role'] = all_scores_df[score_column_map.keys()].idxmax(axis=1)
-
     # Initialize a list to store the selected players and their roles
     selected_players = set()
     squad = []
 
-    # Iterate through the user-specified roles
+    # Create a temporary DataFrame to store each player's score for all roles
+    all_scores = pd.DataFrame()
+
+    for role in score_column_map.keys():
+        # Filter predictions for the current role
+        role_predictions = prediction_results[prediction_results['model_names'] == role]
+
+        # Access the correct score column based on the role
+        score_column = score_column_map.get(role, "prediction_score")
+        role_predictions = role_predictions[['Player', score_column]]
+        role_predictions.rename(columns={score_column: role}, inplace=True)
+
+        # Merge the role predictions into the all_scores DataFrame
+        if all_scores.empty:
+            all_scores = role_predictions
+        else:
+            all_scores = pd.merge(all_scores, role_predictions, on='Player', how='outer')
+
+    # Fill NaN values with 0 (if a player doesn't have a score for a specific role)
+    all_scores.fillna(0, inplace=True)
+
+    # Add a column to track the best score and the role associated with it
+    all_scores['Best Score'] = all_scores.drop('Player', axis=1).max(axis=1)
+    all_scores['Best Role'] = all_scores.drop(['Player', 'Best Score'], axis=1).idxmax(axis=1)
+
+    # Sort players by the best score
+    sorted_scores = all_scores.sort_values(by='Best Score', ascending=False)
+
+    # Allocate players based on user input and their highest scores
     for role, num_players in num_players_per_position.items():
-        # Filter players who are best suited for this role and haven't been selected
-        role_players = all_scores_df[all_scores_df['Best Role'] == role]
-        role_players = role_players[~role_players['Player'].isin(selected_players)]
+        # Select players for the role who have not been assigned to any other role yet
+        role_players = sorted_scores[(sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))]
 
-        # Sort by the best score and select top players
-        top_players = role_players.nlargest(num_players, 'Best Score')
+        # Select top players based on the number required for this role
+        top_players = role_players.head(num_players)
 
-        # Add selected players to the set
+        # Add the selected players to the squad and mark them as selected
         selected_players.update(top_players['Player'])
-
-        # Add to squad
         squad.append(top_players[['Player', 'Best Role', 'Best Score']])
 
-    # Combine all roles into a single DataFrame
+    if not squad:
+        st.write("No players selected for the squad.")
+
+    # Combine all selected players into a single DataFrame
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
+
 
 
 def display_squad(squad):
