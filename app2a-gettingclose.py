@@ -50,35 +50,29 @@ def generate_squad(prediction_results, num_players_per_position):
     all_scores = pd.DataFrame()
 
     for role in score_column_map.keys():
-        # Filter predictions for the current role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Access the correct score column based on the role
         score_column = score_column_map.get(role, "prediction_score")
         role_predictions = role_predictions[['Player', score_column]]
         role_predictions.rename(columns={score_column: role}, inplace=True)
 
-        # Merge the role predictions into the all_scores DataFrame
         if all_scores.empty:
             all_scores = role_predictions
         else:
             all_scores = pd.merge(all_scores, role_predictions, on='Player', how='outer')
 
-    # Convert 'Player' column from categorical to string type
+    # Ensure 'Player' is a Categorical and add 0 as a valid category
     if pd.api.types.is_categorical_dtype(all_scores['Player']):
-        all_scores['Player'] = all_scores['Player'].astype(str)
+        all_scores['Player'] = all_scores['Player'].cat.add_categories([0])
 
     # Fill NaN values with 0
     all_scores.fillna(0, inplace=True)
 
-    # Add a column to track the best score and the role associated with it
     all_scores['Best Score'] = all_scores.drop('Player', axis=1).max(axis=1)
     all_scores['Best Role'] = all_scores.drop(['Player', 'Best Score'], axis=1).idxmax(axis=1)
 
-    # Sort players by the best score
     sorted_scores = all_scores.sort_values(by='Best Score', ascending=False)
 
-    # Allocate players based on user input and their highest scores
     for role, num_players in num_players_per_position.items():
         role_players = sorted_scores[(sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))]
 
@@ -93,6 +87,7 @@ def generate_squad(prediction_results, num_players_per_position):
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
+
 
 
 
