@@ -42,8 +42,6 @@ score_column_map = {
 }
 
 def generate_squad(prediction_results, num_players_per_position):
-    """Generates a squad based on prediction results and number of players per position."""
-    
     # Initialize a list to store the selected players and their roles
     selected_players = set()
     squad = []
@@ -66,7 +64,11 @@ def generate_squad(prediction_results, num_players_per_position):
         else:
             all_scores = pd.merge(all_scores, role_predictions, on='Player', how='outer')
 
-    # Fill NaN values with 0 (if a player doesn't have a score for a specific role)
+    # Convert 'Player' column from categorical to string type
+    if pd.api.types.is_categorical_dtype(all_scores['Player']):
+        all_scores['Player'] = all_scores['Player'].astype(str)
+
+    # Fill NaN values with 0
     all_scores.fillna(0, inplace=True)
 
     # Add a column to track the best score and the role associated with it
@@ -78,23 +80,20 @@ def generate_squad(prediction_results, num_players_per_position):
 
     # Allocate players based on user input and their highest scores
     for role, num_players in num_players_per_position.items():
-        # Select players for the role who have not been assigned to any other role yet
         role_players = sorted_scores[(sorted_scores['Best Role'] == role) & (~sorted_scores['Player'].isin(selected_players))]
 
-        # Select top players based on the number required for this role
         top_players = role_players.head(num_players)
 
-        # Add the selected players to the squad and mark them as selected
         selected_players.update(top_players['Player'])
         squad.append(top_players[['Player', 'Best Role', 'Best Score']])
 
     if not squad:
         st.write("No players selected for the squad.")
 
-    # Combine all selected players into a single DataFrame
     final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
 
     return final_squad
+
 
 
 
