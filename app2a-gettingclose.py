@@ -64,6 +64,16 @@ def generate_squad(prediction_results, num_players_per_position):
         
         # Append to the all_scores_df
         all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
+
+        # Filter based on position constraints
+        if "Keeper" in role:
+            # For goalkeeper roles, ensure only goalkeepers are selected
+            all_scores_df = all_scores_df[all_scores_df['position'] == 'GK']
+        else:
+            # For outfielder roles, ensure only non-goalkeepers are selected
+            all_scores_df = all_scores_df[all_scores_df['position'] == 'non-GK']
+
+        
     
     # Sort by score in descending order
     all_scores_df = all_scores_df.sort_values(by='Score', ascending=False)
