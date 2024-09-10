@@ -65,38 +65,35 @@ def generate_squad(prediction_results, num_players_per_position):
         # Append to the all_scores_df
         all_scores_df = pd.concat([all_scores_df, role_predictions], ignore_index=True)
     
+    # Sort by score in descending order
+    all_scores_df = all_scores_df.sort_values(by='Score', ascending=False)
+    
+    # Initialize a dictionary to keep track of the number of players selected for each role
+    role_counts = {role: 0 for role in score_column_map.keys()}
+    
     # Initialize a list to store the selected players and their roles
     selected_players = set()
     squad = []
+
+    for _, player in all_scores_df.iterrows():
+        player_name = player['Player']
+        player_role = player['Role']
+        
+        if player_name in selected_players:
+            continue
+        
+        if role_counts[player_role] < num_players_per_position[player_role]:
+            # Assign player to the role
+            squad.append(player)
+            selected_players.add(player_name)
+            role_counts[player_role] += 1
+            
+            # Stop if the squad is full
+            if len(selected_players) == sum(num_players_per_position.values()):
+                break
     
-    for role, num_players in num_players_per_position.items():
-        # Filter the DataFrame for the current role
-        role_df = all_scores_df[all_scores_df['Role'] == role]
-        
-        # Sort by score
-        role_df = role_df.sort_values(by='Score', ascending=False)
-        
-        # Filter out already selected players
-        role_df = role_df[~role_df['Player'].isin(selected_players)]
-        
-        # Select top players for this role
-        top_players = role_df.head(num_players)
-        
-        # Check if enough players are available for the role
-        if len(top_players) < num_players:
-            st.write(f"Warning: Not enough players available for role: {role}. Needed {num_players}, found {len(top_players)}.")
-        
-        # Add selected players to the set
-        selected_players.update(top_players['Player'])
-        
-        # Add to squad
-        squad.append(top_players)
-    
-    if not squad:
-        st.write("No players selected for the squad.")
-    
-    # Combine all roles
-    final_squad = pd.concat(squad, ignore_index=True) if squad else pd.DataFrame()
+    # Convert the squad list to a DataFrame
+    final_squad = pd.DataFrame(squad) if squad else pd.DataFrame()
 
     return final_squad
 
@@ -207,77 +204,39 @@ if uploaded_file is not None:
                 st.write(filtered_prediction[['Player', model_name, 'Recommended', 'prediction_score']])
 
         # Squad generation section
+        st.subheader("Squad Generation")
+
+        # Input
         # Squad generation section
         st.subheader("Squad Generation")
 
-        # Input for number of players per position
-        num_goalkeepers = st.number_input("Number of Goalkeepers", min_value=0, max_value=5, value=1)
-        num_defenders = st.number_input("Number of Defenders", min_value=0, max_value=10, value=4)
-        num_midfielders = st.number_input("Number of Midfielders", min_value=0, max_value=10, value=5)
-        num_attackers = st.number_input("Number of Attackers", min_value=0, max_value=5, value=3)
+        # Input for number of players per role
+        num_traditional_keepers = st.number_input("Number of Traditional Keepers:", min_value=0, max_value=10, value=2)
+        num_sweeper_keepers = st.number_input("Number of Sweeper Keepers:", min_value=0, max_value=10, value=1)
+        num_no_nonsense_defenders = st.number_input("Number of No-Nonsense Defenders:", min_value=0, max_value=10, value=2)
+        num_ball_playing_defenders = st.number_input("Number of Ball-Playing Defenders:", min_value=0, max_value=10, value=2)
+        num_full_backs = st.number_input("Number of Full-Backs:", min_value=0, max_value=10, value=4)
+        num_all_action_midfielders = st.number_input("Number of All-Action Midfielders:", min_value=0, max_value=10, value=2)
+        num_midfield_playmakers = st.number_input("Number of Midfield Playmakers:", min_value=0, max_value=10, value=2)
+        num_traditional_wingers = st.number_input("Number of Traditional Wingers:", min_value=0, max_value=10, value=2)
+        num_inverted_wingers = st.number_input("Number of Inverted Wingers:", min_value=0, max_value=10, value=2)
+        num_goal_poachers = st.number_input("Number of Goal Poachers:", min_value=0, max_value=10, value=2)
+        num_target_men = st.number_input("Number of Target Men:", min_value=0, max_value=10, value=2)
 
-        # Input for number of each role per position
-        st.write("**Goalkeeper Roles:**")
-        num_traditional_keepers = st.number_input("Traditional Keepers", min_value=0, max_value=num_goalkeepers, value=1)
-        num_sweeper_keepers = st.number_input("Sweeper Keepers", min_value=0, max_value=num_goalkeepers, value=0)
-        st.write("**Defender Roles:**")
-        num_ball_playing_defenders = st.number_input("Ball-Playing Defenders", min_value=0, max_value=num_defenders, value=2)
-        num_no_nonsense_defenders = st.number_input("No-Nonsense Defenders", min_value=0, max_value=num_defenders, value=2)
-        num_fullbacks = st.number_input("Full-Backs", min_value=0, max_value=num_defenders, value=0)
-        st.write("**Midfielder Roles:**")
-        num_all_action_midfielders = st.number_input("All-Action Midfielders", min_value=0, max_value=num_midfielders, value=2)
-        num_midfield_playmakers = st.number_input("Midfield Playmakers", min_value=0, max_value=num_midfielders, value=2)
-        num_traditional_wingers = st.number_input("Traditional Wingers", min_value=0, max_value=num_midfielders, value=1)
-        num_inverted_wingers = st.number_input("Inverted Wingers", min_value=0, max_value=num_midfielders, value=0)
-        st.write("**Attacker Roles:**")
-        num_goal_poachers = st.number_input("Goal Poachers", min_value=0, max_value=num_attackers, value=2)
-        num_target_men = st.number_input("Target Men", min_value=0, max_value=num_attackers, value=1)
+        num_players_per_position = {
+            "Traditional Keeper": num_traditional_keepers,
+            "Sweeper Keeper": num_sweeper_keepers,
+            "No-Nonsense Defender": num_no_nonsense_defenders,
+            "Ball-Playing Defender": num_ball_playing_defenders,
+            "Full-Back": num_full_backs,
+            "All-Action Midfielder": num_all_action_midfielders,
+            "Midfield Playmaker": num_midfield_playmakers,
+            "Traditional Winger": num_traditional_wingers,
+            "Inverted Winger": num_inverted_wingers,
+            "Goal Poacher": num_goal_poachers,
+            "Target Man": num_target_men
+        }
 
-        # Generate the squad
         if st.button("Generate Squad"):
-            # Create a dictionary to store the selected roles for each position
-            selected_roles = {
-                "Goalkeeper": [
-                    "Traditional Keeper" if num_traditional_keepers > 0 else None,
-                    "Sweeper Keeper" if num_sweeper_keepers > 0 else None
-                ],
-                "Defender": [
-                    "Ball-Playing Defender" if num_ball_playing_defenders > 0 else None,
-                    "No-Nonsense Defender" if num_no_nonsense_defenders > 0 else None,
-                    "Full-Back" if num_fullbacks > 0 else None
-                ],
-                "Midfielder": [
-                    "All-Action Midfielder" if num_all_action_midfielders > 0 else None,
-                    "Midfield Playmaker" if num_midfield_playmakers > 0 else None,
-                    "Traditional Winger" if num_traditional_wingers > 0 else None,
-                    "Inverted Winger" if num_inverted_wingers > 0 else None
-                ],
-                "Attacker": [
-                    "Goal Poacher" if num_goal_poachers > 0 else None,
-                    "Target Man" if num_target_men > 0 else None
-                ]
-            }
-
-            # Create a dictionary for the number of players required for each role
-            num_players_per_position = {
-                "Traditional Keeper": num_traditional_keepers,
-                "Sweeper Keeper": num_sweeper_keepers,
-                "Ball-Playing Defender": num_ball_playing_defenders,
-                "No-Nonsense Defender": num_no_nonsense_defenders,
-                "Full-Back": num_fullbacks,
-                "All-Action Midfielder": num_all_action_midfielders,
-                "Midfield Playmaker": num_midfield_playmakers,
-                "Traditional Winger": num_traditional_wingers,
-                "Inverted Winger": num_inverted_wingers,
-                "Goal Poacher": num_goal_poachers,
-                "Target Man": num_target_men
-            }
-
-            # Generate the squad based on the updated player counts
             final_squad = generate_squad(combined_predictions, num_players_per_position)
-
-            # Display the generated squad
             display_squad(final_squad)
-
-else:
-    st.write("Please upload a CSV file to begin.")
