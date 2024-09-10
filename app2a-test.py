@@ -47,24 +47,17 @@ score_column_map = {
     "Target Man": "y11_targetman"
 }
 
-def generate_squad(prediction_results, num_players_per_position):
-    """Generates a squad based on prediction results and number of players per position."""
-    
+# Additional functions for squad generation
+def generate_squad(prediction_results, num_players_per_position, selected_roles):
+    """Generates a squad based on prediction results, number of players per position, and selected roles."""
+
     squad = []
     for role, num_players in num_players_per_position.items():
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
-        # Debugging output
-        st.write(f"Role: {role}")
-        st.write(f"Filtered predictions: {role_predictions.head()}")
-
-        # Access the correct score column based on the model name
-        score_column = score_column_map.get(role, "prediction_score")
-        role_predictions = role_predictions.sort_values(by=score_column, ascending=False)
-
-        # Debugging output
-        st.write(f"Sorted predictions by {score_column}: {role_predictions.head()}")
+        # Sort predictions by score
+        role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
 
         # Select top players
         top_players = role_predictions[:num_players]
@@ -81,11 +74,8 @@ def display_squad(squad):
     """Displays the generated squad."""
 
     st.header("Generated Squad")
-    if squad.empty:
-        st.write("No players found.")
-    else:
-        for index, player in squad.iterrows():
-            st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
+    for index, player in squad.iterrows():
+        st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
 
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
@@ -102,20 +92,10 @@ if uploaded_file is not None:
     st.write(df.head())
 
     # Make predictions for each model
-    predictions = []
-    for model, model_name in zip(models, model_names):
-        # Make prediction for the current model
-        prediction = predict_model(model, data=df)
-        # Add a new column to identify the model/role
-        prediction['model_names'] = model_name
-        predictions.append(prediction)
+    predictions = [predict_model(model, data=df) for model in models]
 
     # Combine predictions from all models
     combined_predictions = pd.concat(predictions, ignore_index=True)
-
-    # Debugging output
-    st.write("Combined Predictions:")
-    st.write(combined_predictions.head())
 
     # Display predictions
     st.write("Predictions:")
@@ -130,18 +110,13 @@ if uploaded_file is not None:
     show_recommended = st.checkbox("Show Recommended")
     show_not_recommended = st.checkbox("Show Not Recommended")
 
-    for model_name in model_names:
+    for i, (prediction, model_name) in enumerate(zip(predictions, model_names)):
         if model_name in model_checkboxes:
             # Access the correct score column based on the model name
-            score_column = score_column_map.get(model_name, "prediction_score")
+            score_column = score_column_map.get(model_name, "score")  # Default to "score" if not found
 
-            # Filter predictions for the selected model/role
-            filtered_prediction = combined_predictions[combined_predictions['model_names'] == model_name]
-            filtered_prediction = filtered_prediction[filtered_prediction[score_column] >= threshold]
-
-            # Debugging output
-            st.write(f"Filtered predictions for {model_name} with threshold {threshold}:")
-            st.write(filtered_prediction.head())
+            # Filter predictions based on the threshold
+            filtered_prediction = prediction[prediction['prediction_score'] >= threshold]
 
             # Filter predictions based on prediction_label
             if show_recommended and not show_not_recommended:
@@ -220,7 +195,7 @@ if uploaded_file is not None:
         }
 
         # Generate the squad using the generate_squad function
-        squad = generate_squad(combined_predictions, num_players_per_position)
+        squad = generate_squad(combined_predictions, num_players_per_position, selected_roles)
 
         # Display the generated squad
         display_squad(squad)
