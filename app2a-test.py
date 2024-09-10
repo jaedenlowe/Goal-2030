@@ -62,6 +62,11 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles,
         # Filter predictions for the role
         role_predictions = prediction_results[prediction_results['model_names'] == role]
 
+        # Check if role_predictions is empty
+        if role_predictions.empty:
+            st.write(f"No predictions found for role: {role}")
+            continue
+
         # Sort predictions by score
         role_predictions = role_predictions.sort_values(by='prediction_score', ascending=False)
 
@@ -80,7 +85,10 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles,
             break
 
     # Combine all roles
-    final_squad = pd.concat(squad, ignore_index=True)
+    if squad:
+        final_squad = pd.concat(squad, ignore_index=True)
+    else:
+        final_squad = pd.DataFrame()  # Return empty DataFrame if no players
 
     return final_squad
 
@@ -89,8 +97,11 @@ def display_squad(squad):
 
     st.header("Generated Squad")
     st.write(f"Total Players: {len(squad)}")
-    for index, player in squad.iterrows():
-        st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
+    if squad.empty:
+        st.write("No players found.")
+    else:
+        for index, player in squad.iterrows():
+            st.write(f"- {player['Player']}: {player['model_names']} ({player['prediction_score']:.2f})")
 
 
 # Streamlit app
@@ -189,8 +200,16 @@ if uploaded_file is not None:
         "Attacker": num_goal_poachers + num_target_men
     }
 
-    # Generate the squad using the generate_squad function
-    squad = generate_squad(combined_predictions, num_players_per_position, model_checkboxes, total_squad_size)
+    # **Add the Generate Squad button**
+    if st.button("Generate Squad"):
+        # Generate the squad using the generate_squad function
+        squad = generate_squad(combined_predictions, num_players_per_position, model_checkboxes, total_squad_size)
 
-    # Display the generated squad
-    display_squad(squad)
+        # Display the generated squad
+        display_squad(squad)
+    
+    # Debugging information
+    st.write("Debugging Info:")
+    st.write(f"Total Squad Size: {total_squad_size}")
+    st.write(f"Players per Position: {num_players_per_position}")
+
