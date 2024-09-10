@@ -75,6 +75,8 @@ def generate_squad(prediction_results, num_players_per_position, selected_roles)
 
     return final_squad
 
+print(prediction_results[:2])
+
 def display_squad(squad):
   """Displays the generated squad."""
 
