@@ -49,9 +49,13 @@ def generate_squad_with_fallback(prediction_results, num_players_per_position):
     # Initialize counts for missing players
     missing_players_by_role = []
 
+    # Check if 'position' is the correct column name
+    role_column = 'position'  # Update this based on your DataFrame's actual column name
+
     # Iterate over each role and select players
     for role, count_needed in num_players_per_position.items():
-        role_players = prediction_results[prediction_results['Role'] == role]
+        # Filter players based on their role
+        role_players = prediction_results[prediction_results[role_column] == role]
         role_players = role_players.sort_values(by='Score', ascending=False)
 
         selected_for_role = 0
@@ -76,6 +80,7 @@ def generate_squad_with_fallback(prediction_results, num_players_per_position):
         st.success(f"Squad selection completed successfully with {len(selected_players)} players.")
 
     return selected_players
+
 
 
 
