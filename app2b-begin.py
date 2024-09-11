@@ -13,7 +13,7 @@ import os
 
 def scrape_player_urls():
     # Path to your ChromeDriver within the GitHub repository
-    chrome_driver_path = 'streamlitchromedriver'
+    chrome_driver_path = 'streamlitchromedriver/chromedriver'
     
     # Debugging output to verify file existence and permissions
     print(f"Checking ChromeDriver path: {chrome_driver_path}")
