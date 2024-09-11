@@ -19,7 +19,7 @@ def scrape_player_urls():
     chrome_options.add_argument("--disable-dev-shm-usage")  # Required for Streamlit Cloud
 
     # Download and set up the correct version of ChromeDriver
-    driver_path = ChromeDriverManager().install()
+    driver_path = ChromeDriverManager(version="120.0.6099.224").install()
     driver_service = Service(driver_path)
 
     # Initialize the WebDriver with the correct ChromeDriver
