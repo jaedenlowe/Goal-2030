@@ -27,12 +27,12 @@ def scrape_player_urls():
         for link in link_elements:
             href = link.get_attribute('href')
             team_urls.append(href)
-    
+
     # Close the WebDriver
     driver.quit()
-    
+
     player_urls = []
-    
+
     # Scrape player URLs from team pages
     for team_url in team_urls:
         driver = webdriver.Chrome()
@@ -61,7 +61,7 @@ def scrape_player_stats(player_urls):
     for player_url in player_urls:
         driver.get(player_url)
         time.sleep(random.uniform(2, 3))
-        
+
         try:
             bdi_element = driver.find_element(By.CSS_SELECTOR, "bdi.Text.jFxLbA")
             if bdi_element.text != "2024":
@@ -83,24 +83,9 @@ def scrape_player_stats(player_urls):
             player_dict[player_list[i]] = player_list[i + 1]
 
         players_list.append(player_dict)
-    
+
     driver.quit()
     return pd.DataFrame(players_list)
-
-# Streamlit interface
-st.title("Live Player Data Scraping and Squad Generation")
-
-if st.button("Scrape Player Data"):
-    st.write("Scraping player data...")
-    player_urls = scrape_player_urls()
-    player_data = scrape_player_stats(player_urls)
-
-    st.write("Scraped Player Data:")
-    st.write(player_data.head())
-
-    # Save scraped data to CSV
-    player_data.to_csv('scraped_player_data.csv', index=False)
-
 
 # Load the PyCaret models
 def load_all_models():
@@ -124,23 +109,7 @@ def load_all_models():
         st.error(f"Error loading models: {e}")
         return {}
 
-models = load_all_models()
-
-# Dictionary mapping model names to their score column names
-score_column_map = {
-    "Traditional Keeper": "y1_tradkeeper",
-    "Sweeper Keeper": "y2_sweeperkeeper",
-    "Ball-Playing Defender": "y3_ballplayingdefender",
-    "No-Nonsense Defender": "y4_nononsensedefender",
-    "Full-Back": "y5_fullback",
-    "All-Action Midfielder": "y6_allactionmidfielder",
-    "Midfield Playmaker": "y7_midfieldplaymaker",
-    "Traditional Winger": "y8_traditionalwinger",
-    "Inverted Winger": "y9_invertedwinger",
-    "Goal Poacher": "y10_goalpoacher",
-    "Target Man": "y11_targetman"
-}
-
+# Function for generating squad
 def generate_squad(prediction_results, num_players_per_position):
     """Generates a squad based on prediction results and number of players per position."""
     
@@ -204,56 +173,47 @@ def generate_squad(prediction_results, num_players_per_position):
 
     return final_squad
 
-def display_squad(squad):
-    """Displays the generated squad in a formatted table with demarcations."""
-    st.header("Generated Squad")
-    
-    if squad.empty:
-        st.write("No players found.")
-        return
-    
-    # Create a DataFrame for displaying
-    squad_data = []
-    position_types = {
-        "Goalkeeper": ["Traditional Keeper", "Sweeper Keeper"],
-        "Defender": ["Ball-Playing Defender", "No-Nonsense Defender", "Full-Back"],
-        "Midfielder": ["All-Action Midfielder", "Midfield Playmaker", "Traditional Winger", "Inverted Winger"],
-        "Attacker": ["Goal Poacher", "Target Man"]
-    }
-    
-    for position, roles in position_types.items():
-        # Add a demarcation for the position type
-        squad_data.append(["", "", position, ""])
-        
-        # Filter players by role
-        for role in roles:
-            role_players = squad[squad['Role'] == role]
-            
-            # Get the correct score column based on the role
-            score_column = score_column_map.get(role, "prediction_score")
-            
-            for _, player in role_players.iterrows():
-                squad_data.append([player['Player'], position, role, f"{player['Score']:.2f}"])
-    
-    # Convert the list to a DataFrame
-    squad_df = pd.DataFrame(squad_data, columns=["Player Name", "Position", "Role", "Score"])
-    
-    # Display the DataFrame
-    st.write(squad_df)
+# Streamlit interface
+st.title("Live Player Data Scraping and Squad Generation")
 
-# Streamlit app
-st.title("Player Attribute Prediction and Squad Generation")
+if st.button("Scrape Player Data"):
+    st.write("Scraping player data...")
+    player_urls = scrape_player_urls()
+    player_data = scrape_player_stats(player_urls)
 
-# If data has been scraped or uploaded
+    st.write("Scraped Player Data:")
+    st.write(player_data.head())
+
+    # Save scraped data to CSV
+    player_data.to_csv('scraped_player_data.csv', index=False)
+
+# Load models
+models = load_all_models()
+
+# Dictionary mapping model names to their score column names
+score_column_map = {
+    "Traditional Keeper": "y1_tradkeeper",
+    "Sweeper Keeper": "y2_sweeperkeeper",
+    "Ball-Playing Defender": "y3_ballplayingdefender",
+    "No-Nonsense Defender": "y4_nononsensedefender",
+    "Full-Back": "y5_fullback",
+    "All-Action Midfielder": "y6_allactionmidfielder",
+    "Midfield Playmaker": "y7_midfieldplaymaker",
+    "Traditional Winger": "y8_traditionalwinger",
+    "Inverted Winger": "y9_invertedwinger",
+    "Goal Poacher": "y10_goalpoacher",
+    "Target Man": "y11_targetman"
+}
+
+# Load the CSV file
 uploaded_file = st.file_uploader("Upload a CSV file with player attributes (or use scraped data)", type="csv")
 
-if uploaded_file or player_data is not None:
-    # Read data from file or scraped dataframe
-    if uploaded_file:
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = player_data
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+elif player_data is not None:
+    df = player_data
 
+if 'df' in locals():
     st.write("Loaded Player Data:")
     st.write(df.head())
 
@@ -266,8 +226,6 @@ if uploaded_file or player_data is not None:
             # Add a new column to identify the model/role
             prediction['model_names'] = model_name
             predictions.append(prediction)
-        else:
-            st.write(f"Model not found for {model_name}")
 
     if predictions:
         # Combine predictions from all models
