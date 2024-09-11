@@ -2,15 +2,48 @@
 import streamlit as st
 import pandas as pd
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 import random
 from pycaret.classification import load_model, predict_model
 
+
+
+def scrape_player_urls():
+
+    chrome_driver_path = 'streamlitchromedriver/chromedriver'
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode (no GUI)
+    chrome_options.add_argument("--no-sandbox")  # Required for Streamlit Cloud
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Required for Streamlit Cloud
+
+    # Download and set up the correct version of ChromeDriver
+    driver_service = Service(chrome_driver_path)
+
+    # Initialize the WebDriver with the correct ChromeDriver
+    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
+
+
+
+
 # Function for scraping player URLs from team pages
 def scrape_player_urls():
-    # Initialize the WebDriver
-    driver = webdriver.Chrome()
+
+    # Set up Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--headless')  # Run in headless mode
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
+    # Download and set up the correct version of ChromeDriver
+    driver_path = ChromeDriverManager().install()
+    driver_service = Service(driver_path)
+
+    # Initialize the WebDriver with the correct ChromeDriver
+    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
 
     # Navigate to the webpage
     driver.get('https://www.sofascore.com/tournament/football/singapore/premier-league/634')
