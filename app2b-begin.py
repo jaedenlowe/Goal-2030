@@ -15,13 +15,10 @@ import subprocess
 import requests
 
 def download_chromedriver():
-    # ChromeDriver version to download
-    chromedriver_url = "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
-    chromedriver_zip = "chromedriver.zip"
-
-    # Download ChromeDriver
+    chromedriver_url = 'https://chromedriver.storage.googleapis.com/120.0.6099.0/chromedriver_linux64.zip'
     response = requests.get(chromedriver_url)
-    with open(chromedriver_zip, "wb") as file:
+    chromedriver_zip = 'chromedriver_linux64.zip'
+    with open(chromedriver_zip, 'wb') as file:
         file.write(response.content)
 
     # Unzip the chromedriver
@@ -29,6 +26,7 @@ def download_chromedriver():
 
     # Make chromedriver executable
     os.chmod("chromedriver", 0o755)
+
 
 def scrape_player_urls():
     # Ensure ChromeDriver is downloaded
