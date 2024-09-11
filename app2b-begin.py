@@ -14,6 +14,9 @@ import os
 def scrape_player_urls():
     # Path to your ChromeDriver within the GitHub repository
     chrome_driver_path = 'streamlitchromedriver/chromedriver.exe'
+    # Set executable permissions for the ChromeDriver file
+    if not os.access(chrome_driver_path, os.X_OK):
+        os.chmod(chrome_driver_path, 0o755)    
     
     # Debugging output to verify file existence and permissions
     print(f"Checking ChromeDriver path: {chrome_driver_path}")
