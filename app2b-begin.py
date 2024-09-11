@@ -176,6 +176,8 @@ def generate_squad(prediction_results, num_players_per_position):
 # Streamlit interface
 st.title("Live Player Data Scraping and Squad Generation")
 
+player_data = None  # Initialize player_data to None
+
 if st.button("Scrape Player Data"):
     st.write("Scraping player data...")
     player_urls = scrape_player_urls()
