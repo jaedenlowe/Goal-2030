@@ -12,7 +12,12 @@ from pycaret.classification import load_model, predict_model
 
 def scrape_player_urls():
     # Path to your ChromeDriver within the GitHub repository
-    chrome_driver_path = 'streamlitchromedriver'
+    chrome_driver_path = 'streamlitchromedriver/chromedriver'
+    
+    # Debugging output to verify file existence and permissions
+    print(f"Checking ChromeDriver path: {chrome_driver_path}")
+    print(f"File exists: {os.path.exists(chrome_driver_path)}")
+    print(f"File is executable: {os.access(chrome_driver_path, os.X_OK)}")
     
     # Setup Chrome options
     chrome_options = Options()
@@ -22,25 +27,6 @@ def scrape_player_urls():
     
     # Initialize WebDriver
     driver_service = Service(chrome_driver_path)
-    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
-
-
-
-
-# Function for scraping player URLs from team pages
-def scrape_player_urls():
-
-    # Set up Chrome options
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--headless')  # Run in headless mode
-    chrome_options.add_argument('--disable-dev-shm-usage')
-
-    # Download and set up the correct version of ChromeDriver
-    driver_path = ChromeDriverManager().install()
-    driver_service = Service(driver_path)
-
-    # Initialize the WebDriver with the correct ChromeDriver
     driver = webdriver.Chrome(service=driver_service, options=chrome_options)
 
     # Navigate to the webpage
