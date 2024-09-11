@@ -1,8 +1,6 @@
 # Import necessary libraries
 import streamlit as st
 import pandas as pd
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -13,37 +11,14 @@ import os
 import stat
 import subprocess
 import requests
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
 
-def download_chromedriver():
-    chromedriver_url = 'https://chromedriver.storage.googleapis.com/120.0.6099.0/chromedriver_linux64.zip'
-    response = requests.get(chromedriver_url)
-    chromedriver_zip = 'chromedriver_linux64.zip'
-    with open(chromedriver_zip, 'wb') as file:
-        file.write(response.content)
-
-    # Unzip the chromedriver
-    subprocess.run(["unzip", chromedriver_zip])
-
-    # Make chromedriver executable
-    os.chmod("chromedriver", 0o755)
-
-
-def scrape_player_urls():
-    # Ensure ChromeDriver is downloaded
-    if not os.path.exists("./chromedriver"):
-        download_chromedriver()
-
-    # Path to Chromium and ChromeDriver
-    chrome_executable_path = '/usr/bin/chromium'  # Chromium installed via apt
-    chrome_driver_path = './chromedriver'  # Use downloaded ChromeDriver
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    driver_service = Service(chrome_driver_path)
-    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
+def get_firefox_driver():
+    options = webdriver.FirefoxOptions()
+    options.add_argument('--headless')  # Run Firefox in headless mode
+    return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
 
     # Navigate to the webpage
     driver.get('https://www.sofascore.com/tournament/football/singapore/premier-league/634')
