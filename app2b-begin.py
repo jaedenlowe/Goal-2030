@@ -2,10 +2,27 @@
 import streamlit as st
 import pandas as pd
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import time
 import random
 from pycaret.classification import load_model, predict_model
+
+def print_chromedriver_version():
+    # Set up ChromeDriver
+    driver_path = ChromeDriverManager().install()
+    
+    # Print the path where ChromeDriver is installed
+    print(f'ChromeDriver path: {driver_path}')
+
+    # Get the version of the installed ChromeDriver
+    with open(f'{driver_path}/../version.txt') as f:
+        version = f.read().strip()
+    
+    print(f'ChromeDriver version: {version}')
+
+print_chromedriver_version()
+
 
 # Function for scraping player URLs from team pages
 def scrape_player_urls():
