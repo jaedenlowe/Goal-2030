@@ -14,7 +14,7 @@ from pycaret.classification import load_model, predict_model
 
 def scrape_player_urls():
 
-    chrome_driver_path = 'streamlitchromedriver/chromedriver'
+    chrome_driver_path = 'streamlitchromedriver/chromedriver.exe'
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Run in headless mode (no GUI)
     chrome_options.add_argument("--no-sandbox")  # Required for Streamlit Cloud
