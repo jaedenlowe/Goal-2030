@@ -11,6 +11,23 @@ import random
 from pycaret.classification import load_model, predict_model
 import os
 
+def make_file_executable(file_path):
+    if os.path.isfile(file_path):
+        st.write(f"Changing permissions for: {file_path}")
+        st.write(f"Current permissions: {oct(os.stat(file_path).st_mode)}")
+        
+        # Add executable permissions
+        st_mode = os.stat(file_path).st_mode
+        os.chmod(file_path, st_mode | stat.S_IEXEC)
+        
+        st.write(f"Updated permissions: {oct(os.stat(file_path).st_mode)}")
+    else:
+        st.write(f"File does not exist at: {file_path}")
+
+# Change permissions of chromedriver
+chromedriver_path = 'streamlitchromedriver/chromedriver'
+make_file_executable(chromedriver_path)
+
 def check_file_permissions(file_path):
     if os.path.isfile(file_path):
         st.write(f"File exists at: {file_path}")
