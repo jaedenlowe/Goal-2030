@@ -46,9 +46,11 @@ check_file_permissions(chromedriver_path)
 def scrape_player_urls():
     # Path to your Linux-compatible ChromeDriver
     chrome_driver_path = 'streamlitchromedriver/chromedriver'
+    chrome_executable_path = '/usr/bin/chromium'
     
     # Setup Chrome options
     chrome_options = Options()
+    chrome_options.binary_location = chrome_executable_path
     chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -58,7 +60,6 @@ def scrape_player_urls():
     # Initialize WebDriver
     driver_service = Service(chrome_driver_path)
     driver = webdriver.Chrome(service=driver_service, options=chrome_options)
-
     # Navigate to the webpage
     driver.get('https://www.sofascore.com/tournament/football/singapore/premier-league/634')
 
