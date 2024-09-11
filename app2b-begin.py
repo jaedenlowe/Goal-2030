@@ -11,41 +11,33 @@ import random
 from pycaret.classification import load_model, predict_model
 import os
 import stat
+import subprocess
+import requests
 
-def make_file_executable(file_path):
-    if os.path.isfile(file_path):
-        st.write(f"Changing permissions for: {file_path}")
-        st.write(f"Current permissions: {oct(os.stat(file_path).st_mode)}")
-        
-        # Add executable permissions
-        st_mode = os.stat(file_path).st_mode
-        os.chmod(file_path, st_mode | stat.S_IEXEC)
-        
-        st.write(f"Updated permissions: {oct(os.stat(file_path).st_mode)}")
-    else:
-        st.write(f"File does not exist at: {file_path}")
+def download_chromedriver():
+    # ChromeDriver version to download
+    chromedriver_url = "https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
+    chromedriver_zip = "chromedriver.zip"
 
-# Change permissions of chromedriver
-chromedriver_path = 'streamlitchromedriver/chromedriver'
-make_file_executable(chromedriver_path)
+    # Download ChromeDriver
+    response = requests.get(chromedriver_url)
+    with open(chromedriver_zip, "wb") as file:
+        file.write(response.content)
 
-def check_file_permissions(file_path):
-    if os.path.isfile(file_path):
-        st.write(f"File exists at: {file_path}")
-        st.write(f"File permissions: {oct(os.stat(file_path).st_mode)}")
-        st.write(f"Readable: {os.access(file_path, os.R_OK)}")
-        st.write(f"Writable: {os.access(file_path, os.W_OK)}")
-        st.write(f"Executable: {os.access(file_path, os.X_OK)}")
-    else:
-        st.write(f"File does not exist at: {file_path}")
+    # Unzip the chromedriver
+    subprocess.run(["unzip", chromedriver_zip])
 
-# Check permissions of chromedriver
-chromedriver_path = 'streamlitchromedriver/chromedriver'
-check_file_permissions(chromedriver_path)
-        
+    # Make chromedriver executable
+    os.chmod("chromedriver", 0o755)
+
 def scrape_player_urls():
-    chrome_executable_path = '/usr/bin/chromium'  # Path to Chromium on Streamlit Cloud
-    chrome_driver_path = '/usr/bin/chromedriver'  # Path to Chromedriver on Streamlit Cloud
+    # Ensure ChromeDriver is downloaded
+    if not os.path.exists("./chromedriver"):
+        download_chromedriver()
+
+    # Path to Chromium and ChromeDriver
+    chrome_executable_path = '/usr/bin/chromium'  # Chromium installed via apt
+    chrome_driver_path = './chromedriver'  # Use downloaded ChromeDriver
 
     chrome_options = Options()
     chrome_options.add_argument("--headless")
