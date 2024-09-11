@@ -10,20 +10,18 @@ import time
 import random
 from pycaret.classification import load_model, predict_model
 
-
-
 def scrape_player_urls():
-
-    chrome_driver_path = 'streamlitchromedriver/chromedriver.exe'
+    # Path to your ChromeDriver within the GitHub repository
+    chrome_driver_path = 'streamlitchromedriver'
+    
+    # Setup Chrome options
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in headless mode (no GUI)
-    chrome_options.add_argument("--no-sandbox")  # Required for Streamlit Cloud
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Required for Streamlit Cloud
-
-    # Download and set up the correct version of ChromeDriver
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    
+    # Initialize WebDriver
     driver_service = Service(chrome_driver_path)
-
-    # Initialize the WebDriver with the correct ChromeDriver
     driver = webdriver.Chrome(service=driver_service, options=chrome_options)
 
 
