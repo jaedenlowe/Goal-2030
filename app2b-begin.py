@@ -101,51 +101,6 @@ if st.button("Scrape Player Data"):
     # Save scraped data to CSV
     player_data.to_csv('scraped_player_data.csv', index=False)
 
-# If data has been scraped or uploaded
-uploaded_file = st.file_uploader("Upload a CSV file with player attributes (or use scraped data)", type="csv")
-
-if uploaded_file or player_data is not None:
-    # Read data from file or scraped dataframe
-    if uploaded_file:
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = player_data
-
-    st.write("Loaded Player Data:")
-    st.write(df.head())
-
-    # Load prediction models
-    models = {
-        "Traditional Keeper": load_model('model_y1_tradkeeper'),
-        "Sweeper Keeper": load_model('model_y2_sweeperkeeper'),
-        "Ball-Playing Defender": load_model('model_y3_ballplayingdefender'),
-        "No-Nonsense Defender": load_model('model_y4_nononsensedefender'),
-        "Full-Back": load_model('model_y5_fullback'),
-        "All-Action Midfielder": load_model('model_y6_allactionmidfielder'),
-        "Midfield Playmaker": load_model('model_y7_midfieldplaymaker'),
-        "Traditional Winger": load_model('model_y8_traditionalwinger'),
-        "Inverted Winger": load_model('model_y9_invertedwinger'),
-        "Goal Poacher": load_model('model_y10_goalpoacher'),
-        "Target Man": load_model('model_y11_targetman')
-    }
-
-    # Generate predictions for each model
-    predictions = []
-    for model_name, model in models.items():
-        if model:
-            prediction = predict_model(model, data=df)
-            prediction['model_names'] = model_name
-            predictions.append(prediction)
-    
-    combined_predictions = pd.concat(predictions, ignore_index=True)
-    st.write("Predictions:")
-    st.write(combined_predictions)
-
-    # Squad generation code (as provided earlier)
-    # Adjust the role assignments, and display the squad.
-
-    # Display predictions and generated squad here...
-
 
 # Load the PyCaret models
 def load_all_models():
@@ -289,15 +244,17 @@ def display_squad(squad):
 # Streamlit app
 st.title("Player Attribute Prediction and Squad Generation")
 
-# File uploader widget
-uploaded_file = st.file_uploader("Upload a CSV file with player attributes", type="csv")
+# If data has been scraped or uploaded
+uploaded_file = st.file_uploader("Upload a CSV file with player attributes (or use scraped data)", type="csv")
 
-if uploaded_file is not None:
-    # Read the CSV file into a DataFrame
-    df = pd.read_csv(uploaded_file)
+if uploaded_file or player_data is not None:
+    # Read data from file or scraped dataframe
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = player_data
 
-    # Display the dataframe
-    st.write("Uploaded DataFrame:")
+    st.write("Loaded Player Data:")
     st.write(df.head())
 
     # Make predictions for each model
