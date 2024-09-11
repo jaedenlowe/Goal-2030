@@ -44,7 +44,7 @@ chromedriver_path = 'streamlitchromedriver/chromedriver'
 check_file_permissions(chromedriver_path)
         
 def scrape_player_urls():
-    chrome_executable_path = '/usr/bin/chromium-browser'  # Path to Chromium on Streamlit Cloud
+    chrome_executable_path = '/usr/bin/chromium'  # Path to Chromium on Streamlit Cloud
     chrome_driver_path = '/usr/bin/chromedriver'  # Path to Chromedriver on Streamlit Cloud
 
     chrome_options = Options()
@@ -54,7 +54,7 @@ def scrape_player_urls():
 
     driver_service = Service(chrome_driver_path)
     driver = webdriver.Chrome(service=driver_service, options=chrome_options)
-    
+
     # Navigate to the webpage
     driver.get('https://www.sofascore.com/tournament/football/singapore/premier-league/634')
 
