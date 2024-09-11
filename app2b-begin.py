@@ -12,23 +12,17 @@ from pycaret.classification import load_model, predict_model
 import os
 
 def scrape_player_urls():
-    # Path to your ChromeDriver within the GitHub repository
-    chrome_driver_path = 'streamlitchromedriver/chromedriver'
-    # Set executable permissions for the ChromeDriver file
-    if not os.access(chrome_driver_path, os.X_OK):
-        os.chmod(chrome_driver_path, 0o755)    
-    
-    # Debugging output to verify file existence and permissions
-    print(f"Checking ChromeDriver path: {chrome_driver_path}")
-    print(f"File exists: {os.path.exists(chrome_driver_path)}")
-    print(f"File is executable: {os.access(chrome_driver_path, os.X_OK)}")
+    # Path to your Linux-compatible ChromeDriver
+    chrome_driver_path = '/streamlitchromedriver/chromedriver'
     
     # Setup Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Run in headless mode
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    
+    chrome_options.add_argument("--remote-debugging-port=9222")  # For remote debugging
+    chrome_options.add_argument("--disable-gpu")  # Disable GPU acceleration
+
     # Initialize WebDriver
     driver_service = Service(chrome_driver_path)
     driver = webdriver.Chrome(service=driver_service, options=chrome_options)
