@@ -13,7 +13,7 @@ import os
 
 def scrape_player_urls():
     # Path to your Linux-compatible ChromeDriver
-    chrome_driver_path = '/streamlitchromedriver/chromedriver'
+    chrome_driver_path = 'streamlitchromedriver/chromedriver'
     
     # Setup Chrome options
     chrome_options = Options()
