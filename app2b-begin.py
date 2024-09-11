@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 import random
 from pycaret.classification import load_model, predict_model
+import os
 
 def scrape_player_urls():
     # Path to your ChromeDriver within the GitHub repository
