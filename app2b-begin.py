@@ -11,6 +11,16 @@ import random
 from pycaret.classification import load_model, predict_model
 import os
 
+def ensure_chromedriver_permissions(chromedriver_path):
+    if os.path.isfile(chromedriver_path):
+        # Check if it's executable; if not, make it executable
+        st = os.stat(chromedriver_path)
+        if not (st.st_mode & stat.S_IXUSR):
+            os.chmod(chromedriver_path, st.st_mode | stat.S_IXUSR)
+        print("Chromedriver permissions are set correctly.")
+    else:
+        print(f"Chromedriver not found at {chromedriver_path}")
+        
 def scrape_player_urls():
     # Path to your Linux-compatible ChromeDriver
     chrome_driver_path = 'streamlitchromedriver/chromedriver'
