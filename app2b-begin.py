@@ -8,26 +8,24 @@ import time
 import random
 from pycaret.classification import load_model, predict_model
 
-def print_chromedriver_version():
-    # Set up ChromeDriver
-    driver_path = ChromeDriverManager().install()
-    
-    # Print the path where ChromeDriver is installed
-    print(f'ChromeDriver path: {driver_path}')
 
-    # Get the version of the installed ChromeDriver
-    with open(f'{driver_path}/../version.txt') as f:
-        version = f.read().strip()
-    
-    print(f'ChromeDriver version: {version}')
-
-print_chromedriver_version()
 
 
 # Function for scraping player URLs from team pages
 def scrape_player_urls():
-    # Initialize the WebDriver
-    driver = webdriver.Chrome()
+
+    # Set up Chrome options
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--headless')  # Run in headless mode
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
+    # Download and set up the correct version of ChromeDriver
+    driver_path = ChromeDriverManager().install()
+    driver_service = Service(driver_path)
+
+    # Initialize the WebDriver with the correct ChromeDriver
+    driver = webdriver.Chrome(service=driver_service, options=chrome_options)
 
     # Navigate to the webpage
     driver.get('https://www.sofascore.com/tournament/football/singapore/premier-league/634')
