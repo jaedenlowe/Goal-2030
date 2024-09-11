@@ -1,4 +1,2 @@
 chromium
 unzip
-firefox-esr
-geckodriver
