@@ -1,0 +1,325 @@
+2024-09-12 11:24:59,673:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2024-09-12 11:24:59,674:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2024-09-12 11:24:59,674:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2024-09-12 11:24:59,675:WARNING:
+'cuml' is a soft dependency and not included in the pycaret installation. Please run: `pip install cuml` to install.
+2024-09-12 11:25:01,174:INFO:Initializing load_model()
+2024-09-12 11:25:01,175:INFO:load_model(model_name=model_y1_tradkeeper, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,081:INFO:Initializing load_model()
+2024-09-12 11:25:02,081:INFO:load_model(model_name=model_y2_sweeperkeeper, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,092:INFO:Initializing load_model()
+2024-09-12 11:25:02,092:INFO:load_model(model_name=model_y3_ballplayingdefender, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,096:INFO:Initializing load_model()
+2024-09-12 11:25:02,097:INFO:load_model(model_name=model_y4_nononsensedefender, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,138:INFO:Initializing load_model()
+2024-09-12 11:25:02,138:INFO:load_model(model_name=model_y5_fullback, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,148:INFO:Initializing load_model()
+2024-09-12 11:25:02,148:INFO:load_model(model_name=model_y6_allactionmidfielder, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,283:INFO:Initializing load_model()
+2024-09-12 11:25:02,284:INFO:load_model(model_name=model_y7_midfieldplaymaker, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,288:INFO:Initializing load_model()
+2024-09-12 11:25:02,289:INFO:load_model(model_name=model_y8_traditionalwinger, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,299:INFO:Initializing load_model()
+2024-09-12 11:25:02,299:INFO:load_model(model_name=model_y9_invertedwinger, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,303:INFO:Initializing load_model()
+2024-09-12 11:25:02,303:INFO:load_model(model_name=model_y10_goalpoacher, platform=None, authentication=None, verbose=True)
+2024-09-12 11:25:02,308:INFO:Initializing load_model()
+2024-09-12 11:25:02,308:INFO:load_model(model_name=model_y11_targetman, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,194:INFO:Initializing load_model()
+2024-09-12 11:30:36,203:INFO:load_model(model_name=model_y1_tradkeeper, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,213:INFO:Initializing load_model()
+2024-09-12 11:30:36,213:INFO:load_model(model_name=model_y2_sweeperkeeper, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,226:INFO:Initializing load_model()
+2024-09-12 11:30:36,227:INFO:load_model(model_name=model_y3_ballplayingdefender, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,231:INFO:Initializing load_model()
+2024-09-12 11:30:36,231:INFO:load_model(model_name=model_y4_nononsensedefender, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,274:INFO:Initializing load_model()
+2024-09-12 11:30:36,274:INFO:load_model(model_name=model_y5_fullback, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,277:INFO:Initializing load_model()
+2024-09-12 11:30:36,277:INFO:load_model(model_name=model_y6_allactionmidfielder, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,319:INFO:Initializing load_model()
+2024-09-12 11:30:36,319:INFO:load_model(model_name=model_y7_midfieldplaymaker, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,323:INFO:Initializing load_model()
+2024-09-12 11:30:36,323:INFO:load_model(model_name=model_y8_traditionalwinger, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,326:INFO:Initializing load_model()
+2024-09-12 11:30:36,327:INFO:load_model(model_name=model_y9_invertedwinger, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,330:INFO:Initializing load_model()
+2024-09-12 11:30:36,330:INFO:load_model(model_name=model_y10_goalpoacher, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,335:INFO:Initializing load_model()
+2024-09-12 11:30:36,335:INFO:load_model(model_name=model_y11_targetman, platform=None, authentication=None, verbose=True)
+2024-09-12 11:30:36,382:INFO:Initializing predict_model()
+2024-09-12 11:30:36,382:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x00000231084C1090>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator', KNeighborsClassifier(n_jobs=-1))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:36,383:INFO:Checking exceptions
+2024-09-12 11:30:36,383:INFO:Preloading libraries
+2024-09-12 11:30:36,383:INFO:Set up data.
+2024-09-12 11:30:36,397:INFO:Set up index.
+2024-09-12 11:30:36,611:INFO:Initializing predict_model()
+2024-09-12 11:30:36,611:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023109E14390>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator', KNeighborsClassifier(n_jobs=-1))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:36,611:INFO:Checking exceptions
+2024-09-12 11:30:36,611:INFO:Preloading libraries
+2024-09-12 11:30:36,611:INFO:Set up data.
+2024-09-12 11:30:36,623:INFO:Set up index.
+2024-09-12 11:30:36,746:INFO:Initializing predict_model()
+2024-09-12 11:30:36,746:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023108449E10>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 DecisionTreeClassifier(random_state=8088))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:36,747:INFO:Checking exceptions
+2024-09-12 11:30:36,747:INFO:Preloading libraries
+2024-09-12 11:30:36,747:INFO:Set up data.
+2024-09-12 11:30:36,757:INFO:Set up index.
+2024-09-12 11:30:36,861:INFO:Initializing predict_model()
+2024-09-12 11:30:36,862:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113A1A210>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 RandomForestClassifier(n_jobs=-1, random_state=6293))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:36,862:INFO:Checking exceptions
+2024-09-12 11:30:36,862:INFO:Preloading libraries
+2024-09-12 11:30:36,863:INFO:Set up data.
+2024-09-12 11:30:36,873:INFO:Set up index.
+2024-09-12 11:30:37,015:INFO:Initializing predict_model()
+2024-09-12 11:30:37,015:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113B18710>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=1552))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,015:INFO:Checking exceptions
+2024-09-12 11:30:37,015:INFO:Preloading libraries
+2024-09-12 11:30:37,015:INFO:Set up data.
+2024-09-12 11:30:37,027:INFO:Set up index.
+2024-09-12 11:30:37,134:INFO:Initializing predict_model()
+2024-09-12 11:30:37,134:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113B18710>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 ExtraTreesClassifier(n_jobs=-1, random_state=8559))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,135:INFO:Checking exceptions
+2024-09-12 11:30:37,135:INFO:Preloading libraries
+2024-09-12 11:30:37,136:INFO:Set up data.
+2024-09-12 11:30:37,146:INFO:Set up index.
+2024-09-12 11:30:37,297:INFO:Initializing predict_model()
+2024-09-12 11:30:37,297:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113B751D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=1080))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,299:INFO:Checking exceptions
+2024-09-12 11:30:37,299:INFO:Preloading libraries
+2024-09-12 11:30:37,299:INFO:Set up data.
+2024-09-12 11:30:37,310:INFO:Set up index.
+2024-09-12 11:30:37,425:INFO:Initializing predict_model()
+2024-09-12 11:30:37,425:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113426690>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=5385))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,425:INFO:Checking exceptions
+2024-09-12 11:30:37,425:INFO:Preloading libraries
+2024-09-12 11:30:37,425:INFO:Set up data.
+2024-09-12 11:30:37,434:INFO:Set up index.
+2024-09-12 11:30:37,557:INFO:Initializing predict_model()
+2024-09-12 11:30:37,557:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023111DB53D0>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=8794))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,558:INFO:Checking exceptions
+2024-09-12 11:30:37,558:INFO:Preloading libraries
+2024-09-12 11:30:37,558:INFO:Set up data.
+2024-09-12 11:30:37,567:INFO:Set up index.
+2024-09-12 11:30:37,683:INFO:Initializing predict_model()
+2024-09-12 11:30:37,683:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113947E90>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=6202))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,684:INFO:Checking exceptions
+2024-09-12 11:30:37,684:INFO:Preloading libraries
+2024-09-12 11:30:37,684:INFO:Set up data.
+2024-09-12 11:30:37,695:INFO:Set up index.
+2024-09-12 11:30:37,798:INFO:Initializing predict_model()
+2024-09-12 11:30:37,799:INFO:predict_model(self=<pycaret.classification.oop.ClassificationExperiment object at 0x0000023113D93850>, estimator=Pipeline(memory=Memory(location=None),
+         steps=[('numerical_imputer',
+                 TransformerWrapper(include=['x1_goalspergame', 'x2_assists',
+                                             'x3_passingacc', 'x4_longballacc',
+                                             'x5_crossingacc',
+                                             'x6_interceptions', 'x7_ballrecov',
+                                             'x8_nowaythru', 'x9_clearance',
+                                             'x10_dribbsucc', 'x11_duelwon',
+                                             'x12_aerialduelwon',
+                                             'x13_cleansheet',
+                                             'x14_percentsaved',
+                                             'y1_tradkeeper'],
+                                    transformer=SimpleImputer())),
+                ('categorical_imputer',
+                 TransformerWrapper(include=[],
+                                    transformer=SimpleImputer(strategy='most_frequent'))),
+                ('clean_column_names',
+                 TransformerWrapper(transformer=CleanColumnNames())),
+                ('actual_estimator',
+                 LogisticRegression(max_iter=1000, random_state=8619))]), probability_threshold=None, encoded_labels=False, raw_score=False, round=4, verbose=True, ml_usecase=None, preprocess=True, encode_labels=<function _SupervisedExperiment.predict_model.<locals>.encode_labels at 0x00000231084B1D00>)
+2024-09-12 11:30:37,799:INFO:Checking exceptions
+2024-09-12 11:30:37,799:INFO:Preloading libraries
+2024-09-12 11:30:37,800:INFO:Set up data.
+2024-09-12 11:30:37,810:INFO:Set up index.
