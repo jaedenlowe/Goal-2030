@@ -10,7 +10,8 @@
 - [Data Collection](#Data-Collection)
 - [Modelling](#Modelling)
 - [Modelling Results](#Modelling-Results)
-- [Key Recommendations](#Key-Recommendations)
+- [Solution](#Solution)
+- [Future Work](#Future-Work)
 
 ## Background
 
@@ -59,8 +60,8 @@ By achieving these objectives, the project seeks to revolutionize the national t
 
 Our data scraping, pre-processing, modeling process and exploratory data analysis steps can be found in the following notebooks:
 
-[01_scraping](01_scraping.ipynb)  
-[02_modelling](02_modelling.ipynb)  
+[01_scraping](/2.%20Data%20Scrape/01_scraping.ipynb)  
+[02_modelling](/3.%20Final%20Model/02_modelling.ipynb)  
 [03_eda](03_eda.ipynb)  
 
 ## Modelling
@@ -135,9 +136,31 @@ Train machine learning models to predict role suitability:
 
 ## Solution
 
-The app can be found here: [Streamlit](localstreamlitapp-final.py)  
+The app can be found here: [Streamlit](/7.%20App%20Phase%202b%20-%20Realtime%20Pull/localstreamlitapp-final.py)  
 
 ## Future Work
 
+This project has laid a strong foundation for a data-driven approach to Singapore national football team selection. It can only get better by:
 
+**1. Integrating Overseas Singaporean Players:**
+
+Currently, the project focuses on players from the Singaporean league. Expanding the data collection to include overseas Singaporean players plying their trade in other leagues would create a more comprehensive player pool.
+Potential challenges include:
+- Accessing data from various international leagues.
+- Accounting for the varying levels of competition in different leagues.
+Solutions could involve:
+- Employing data normalization techniques.
+- Developing a weighting system to adjust for league difficulty.
+
+**2. Squad Generation Based on Opposition Data:**
+
+The current model focuses on individual player performance. Taking it a step further, the app could generate a squad based on the specific strengths and weaknesses of the upcoming opponent.
+This would involve:
+- Gathering data on opposing teams' playing style, formations, and key players.
+- Developing algorithms that analyze both our players' strengths and the opponent's weaknesses.
+- Integrating this data with the existing player suitability models.
+This would require:
+- Building new models that account for both player and team-level factors.
+
+By tackling these future work areas, the project can evolve into a powerful tool that helps coaches select the most effective squad for any given opponent, significantly enhancing Singapore's chances of success on the international stage.
 
