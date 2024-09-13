@@ -1,5 +1,5 @@
 # Goal 2030? 
-## Getting Singapore to the World Cup
+## Taking Singapore to the World Cup
 ### By Jaeden Lowe
 
 ## Content Directory:
