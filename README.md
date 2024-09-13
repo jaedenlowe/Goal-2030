@@ -105,6 +105,9 @@ Train machine learning models to predict role suitability:
 
 ## Modelling Results
 
+| Average Model Accuracy  | 0.9485 |
+|-------------------------|--------|
+
 | Role                        |   M1   |   M2   |   M3   |
 |-----------------------------|:------:|:------:|:------:|
 | Class_Traditional Keeper    | 0.9857 | 0.9857 | 0.9857 |
