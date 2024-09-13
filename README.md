@@ -23,7 +23,7 @@ By leveraging club-level statistics, we can enhance the selection process for th
 
 ## Problem Statement
 
-### *The lack of comprehensive and accessible data, and consequentially, data-driven tools, to faciliate the selection of players for the Singapore national team meant that selection is still heavily reliant of subjective judgement of coaches and scouts. While experience and intuition are still useful, this method can lead to biases and overlooked talents.
+### The lack of comprehensive and accessible data, and consequentially, data-driven tools, to faciliate the selection of players for the Singapore national team meant that selection is still heavily reliant of subjective judgement of coaches and scouts. While experience and intuition are still useful, this method can lead to biases and overlooked talents.
 
 ## Aim
 
