@@ -105,6 +105,13 @@ Train machine learning models to predict role suitability:
 
 ## Modelling Results
 
+The average model accuracy is 0.9485, indicating that our predictor will predict the roles correctly at a high level.
+
+| Average Model Accuracy  | 0.9485 |
+|-------------------------|--------|
+
+There is on the whole a very high train/test accuracy and f1 for all the top models taken for each role, and time taken are all below 0.2 seconds.
+
 |                      target | train_accuracy | test_accuracy | train_f1 |  test_f1 |    TT |
 |----------------------------:|---------------:|--------------:|---------:|---------:|------:|
 |    Class_Traditional Keeper |       0.978022 |      1.000000 | 0.978664 | 1.000000 | 0.016 |
@@ -119,12 +126,14 @@ Train machine learning models to predict role suitability:
 |          Class_Goal Poacher |       0.923077 |      0.869565 | 0.922790 | 0.864803 | 0.026 |
 |            Class_Target Man |       1.000000 |      0.739130 | 1.000000 | 0.725064 | 0.070 |
 
-There is on the whole a very high train/test accuracy and f1 for all the top models taken for each role, and time taken are all below 0.2 seconds.
 
-| Average Model Accuracy  | 0.9485 |
-|-------------------------|--------|
+The average train accuracy and F1 lies at around 0.99, while test accuracy and F1 lies at just below 0.93. Time taken averages at 0.03secs, which is very fast.
 
-The average model accuracy is 0.9485, indicating that our predictor will predict the roles correctly at a high level.
+| train_accuracy | test_accuracy | train_f1 | test_f1 | TT     |
+|----------------|---------------|----------|---------|--------|
+| 0.9910         | 0.9289        | 0.9910   | 0.9275  | 0.0362 |
+
+Over here, we can see that accuracy of the top 3 models for each role are all at a very high level, with the lowest being 0.8524. 
 
 | Role                        |   M1   |   M2   |   M3   |
 |-----------------------------|:------:|:------:|:------:|
@@ -140,7 +149,7 @@ The average model accuracy is 0.9485, indicating that our predictor will predict
 | Class_Goal Poacher          | 0.9381 | 0.8548 | 0.8524 |
 | Class_Target Man            | 0.9167 | 0.9095 | 0.8857 |
 
-Over here, we can see that accuracy of the top 3 models for each role are all at a very high level, with the lowest being 0.8524. 
+For greater clarity, we can see the top 3 models that produced the accuracy above for each role. Most of the top models were Logistic Regression, while 2 were K Neighbors Classifier, and 1 each were Extra Trees Classifier and Random Forest Classifier.
 
 |             Role            |        1st Model       |        2nd Model       |          3rd Model         |
 |:---------------------------:|:----------------------:|:----------------------:|:--------------------------:|
@@ -155,8 +164,6 @@ Over here, we can see that accuracy of the top 3 models for each role are all at
 | Class_Inverted Winger       | LogisticRegression     | RidgeClassifier        | LinearDiscriminantAnalysis |
 | Class_Goal Poacher          | KNeighborsClassifier   | ExtraTreesClassifier   | LogisticRegression         |
 | Class_Target Man            | RandomForestClassifier | XGBClassifier          | ExtraTreesClassifier       |
-
-For greater clarity, we can see the top 3 models that produced the accuracy above for each role. Most of the top models were Logistic Regression, while 2 were K Neighbors Classifier, and 1 each were Extra Trees Classifier and Random Forest Classifier.
 
 ## Solution
 
