@@ -158,18 +158,21 @@ def scrape_player_data(player_urls):
 # Load the PyCaret models
 def load_all_models():
     try:
+        # Get absolute directory path of this script
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
         models = {
-            "Traditional Keeper": load_model('model_Class_Traditional Keeper'),
-            "Sweeper Keeper": load_model('model_Class_Sweeper Keeper'),
-            "Ball-Playing Defender": load_model('model_Class_Ball-Playing Defender'),
-            "No-Nonsense Defender": load_model('model_Class_No-Nonsense Defender'),
-            "Full-Back": load_model('model_Class_Full-Back'),
-            "All-Action Midfielder": load_model('model_Class_All-Action Midfielder'),
-            "Midfield Playmaker": load_model('model_Class_Midfield Playmaker'),
-            "Traditional Winger": load_model('model_Class_Traditional Winger'),
-            "Inverted Winger": load_model('model_Class_Inverted Winger'),
-            "Goal Poacher": load_model('model_Class_Goal Poacher'),
-            "Target Man": load_model('model_Class_Target Man')
+            "Traditional Keeper": load_model(os.path.join(base_dir, 'model_Class_Traditional Keeper')),
+            "Sweeper Keeper": load_model(os.path.join(base_dir, 'model_Class_Sweeper Keeper')),
+            "Ball-Playing Defender": load_model(os.path.join(base_dir, 'model_Class_Ball-Playing Defender')),
+            "No-Nonsense Defender": load_model(os.path.join(base_dir, 'model_Class_No-Nonsense Defender')),
+            "Full-Back": load_model(os.path.join(base_dir, 'model_Class_Full-Back')),
+            "All-Action Midfielder": load_model(os.path.join(base_dir, 'model_Class_All-Action Midfielder')),
+            "Midfield Playmaker": load_model(os.path.join(base_dir, 'model_Class_Midfield Playmaker')),
+            "Traditional Winger": load_model(os.path.join(base_dir, 'model_Class_Traditional Winger')),
+            "Inverted Winger": load_model(os.path.join(base_dir, 'model_Class_Inverted Winger')),
+            "Goal Poacher": load_model(os.path.join(base_dir, 'model_Class_Goal Poacher')),
+            "Target Man": load_model(os.path.join(base_dir, 'model_Class_Target Man'))
         }
         st.write("Models loaded successfully.")
         return models
