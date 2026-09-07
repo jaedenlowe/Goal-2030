@@ -3,3 +3,4 @@ pandas
 pycaret
 selenium
 webdriver-manager
+beautifulsoup4
