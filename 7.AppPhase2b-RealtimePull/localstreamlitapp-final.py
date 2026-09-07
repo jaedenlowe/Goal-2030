@@ -155,6 +155,8 @@ def scrape_player_data(player_urls):
     players_df = pd.DataFrame(players_list)
     return players_df
 
+import os
+
 # Load the PyCaret models
 def load_all_models():
     try:
